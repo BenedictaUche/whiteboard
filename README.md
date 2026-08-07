@@ -42,7 +42,7 @@ Create a `.env` file and add your OpenRouter API key:
 
 ```env
 OPENROUTER_API_KEY=your_api_key
-OPENROUTER_MODEL=mistralai/mistral-small-3.2-24b-instruct:free
+OPENROUTER_MODEL=
 ```
 
 Start the development server:
