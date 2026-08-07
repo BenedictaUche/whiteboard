@@ -22,7 +22,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
   });
 
   return (
-    <section className="fade-in space-y-8 max-w-[900px] mx-auto w-full px-4">
+    <section className="fade-in space-y-8 max-w-225 mx-auto w-full px-4">
       {/* Title */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#F2EDE6]">
         <div>
@@ -52,6 +52,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
             <button
               onClick={onClearHistory}
               className="text-xs text-red-600 hover:text-red-800 font-medium px-3 py-2 border border-red-200 rounded-xl bg-white hover:bg-red-50 cursor-pointer"
+              aria-label="Clear History"
             >
               Clear History
             </button>
@@ -60,6 +61,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
           <button
             onClick={onStartNewDrill}
             className="bg-[#F28C56] text-white text-sm font-medium px-4 py-2 rounded-xl shadow-sm hover:bg-[#e07742] transition-colors cursor-pointer"
+            aria-label="Start New Drill"
           >
             New Drill
           </button>
@@ -67,7 +69,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
       </div>
 
       {filtered.length === 0 ? (
-        <div className="bg-white/60 border border-[#F2EDE6] rounded-[32px] p-12 text-center space-y-4">
+        <div className="bg-white/60 border border-[#F2EDE6] rounded-4xl p-12 text-center space-y-4">
           <span className="material-symbols-outlined text-4xl text-[#82A87D]">
             history_edu
           </span>
@@ -78,6 +80,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
           <button
             onClick={onStartNewDrill}
             className="bg-[#F28C56] text-white font-medium px-6 py-2.5 rounded-full text-sm shadow-sm hover:bg-[#e07742] transition-colors cursor-pointer"
+            aria-label="Start Your First Practice Drill"
           >
             Start Your First Practice Drill
           </button>
@@ -115,7 +118,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
                   </p>
                 </div>
 
-                <div className="flex items-center gap-4 flex-shrink-0">
+                <div className="flex items-center gap-4 shrink-0">
                   {record.feedback && (
                     <div className="text-right">
                       <div className="text-2xl font-bold font-display text-[#E87333]">

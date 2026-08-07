@@ -25,6 +25,7 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={() => onNavigate('selection')}
           className="flex items-center gap-3 text-left focus:outline-none group cursor-pointer"
+          aria-label="Whiteboard Logo"
         >
           <img src="/logo.png" alt="Whiteboard Logo" className="w-10 h-10" />
           <span className="font-display text-[22px] font-bold text-[#1A1A24] tracking-tight">
@@ -41,6 +42,7 @@ export const Header: React.FC<HeaderProps> = ({
                 ? 'text-[#3B5436] font-semibold'
                 : 'text-[#7D7068] hover:text-[#944a19]'
             }`}
+            aria-label="Navigate to Practice"
           >
             Practice
             {currentStep !== 'history' && (
@@ -55,6 +57,7 @@ export const Header: React.FC<HeaderProps> = ({
                 ? 'text-[#3B5436] font-semibold'
                 : 'text-[#7D7068] hover:text-[#944a19]'
             }`}
+            aria-label="Navigate to History"
           >
             History
             {currentStep === 'history' && (
@@ -69,6 +72,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onToggleTheme}
             title={`Current theme: ${theme}. Click to change.`}
             className="hover:bg-[#d8e3d8] transition-colors duration-200 rounded-full p-2 flex items-center justify-center active:scale-95 cursor-pointer"
+            aria-label="Toggle Theme"
           >
             <span className="material-symbols-outlined font-light text-[22px]">
               {theme === 'dark' ? 'dark_mode' : theme === 'sage' ? 'eco' : 'light_mode'}
@@ -79,6 +83,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onOpenHelp}
             title="Help & Info"
             className="hover:bg-[#d8e3d8] transition-colors duration-200 rounded-full p-2 flex items-center justify-center active:scale-95 cursor-pointer"
+            aria-label="Open Help & Info"
           >
             <span className="material-symbols-outlined font-light text-[22px]">help_outline</span>
           </button>
@@ -87,6 +92,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onOpenSettings}
             title="Settings"
             className="hover:bg-[#d8e3d8] transition-colors duration-200 rounded-full p-2 flex items-center justify-center active:scale-95 cursor-pointer"
+            aria-label="Open Settings"
           >
             <span className="material-symbols-outlined font-light text-[22px]">settings</span>
           </button>

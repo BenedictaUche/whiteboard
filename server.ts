@@ -10,7 +10,7 @@ import {
 } from './src/lib/ai';
 
 // Prefer local override files (same convention as Vite)
-dotenv.config({ path: '.env.development.local' });
+dotenv.config({ path: '.env' });
 dotenv.config({ path: '.env.local' });
 dotenv.config();
 

@@ -189,6 +189,7 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({
           onClick={handleSpinClick}
           disabled={isSpinning}
           className="bg-white border border-[#F2EDE6] shadow-sm hover:bg-gray-50 text-[#1A1A24] font-medium text-[15px] px-6 py-3.5 rounded-2xl transition-all duration-200 flex items-center gap-2.5 active:scale-95 cursor-pointer disabled:opacity-50"
+          aria-label="Spin Again"
         >
           <span
             className={`material-symbols-outlined text-[#5C5C5C] ${
@@ -206,6 +207,7 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({
             disabled={isGeneratingCustom}
             title="Generate a fresh topic using AI"
             className="bg-[#E8F3E8] border border-[#C5DEC5] text-[#3B5436] font-medium text-[15px] px-5 py-3.5 rounded-2xl transition-all duration-200 flex items-center gap-2 active:scale-95 cursor-pointer hover:bg-[#d9ebd9]"
+            aria-label="Generate Custom Topic"
           >
             {isGeneratingCustom ? 'AI Generating...' : 'AI Custom Topic'}
           </button>
@@ -214,6 +216,7 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({
         <button
           onClick={onGetStarted}
           className="bg-linear-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-[16px] px-8 py-3.5 rounded-full transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center gap-2 active:scale-95 cursor-pointer"
+          aria-label="Get Started"
         >
           Get Started
           <span className="material-symbols-outlined font-light text-xl">

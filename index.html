@@ -21,6 +21,7 @@
     <meta property="og:url" content="https://whiteboard.dev" />
     <title>Whiteboard - Technical Zen Practice</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href="https://whiteboard-drill.vercel.app/" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -37,5 +38,15 @@
   >
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Whiteboard",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Web",
+        "description": "Practice technical interviews with AI."
+      }
+    </script>
   </body>
 </html>

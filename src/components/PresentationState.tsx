@@ -241,7 +241,7 @@ export const PresentationState: React.FC<PresentationStateProps> = ({
       : transcript;
 
   return (
-    <section className="fade-in flex flex-col min-h-[550px] w-full max-w-[900px] mx-auto space-y-8">
+    <section className="fade-in flex flex-col min-h-137.5 w-full max-w-225 mx-auto space-y-8">
       <div className="flex justify-between items-center pb-6 border-b border-[#F2EDE6]">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mic-pulse shadow-sm">
@@ -265,6 +265,8 @@ export const PresentationState: React.FC<PresentationStateProps> = ({
         <button
           onClick={handleStop}
           className="bg-white border border-red-200 text-red-600 hover:bg-red-50 transition-colors font-medium text-base px-6 py-2.5 rounded-full flex items-center gap-2 active:scale-95 cursor-pointer shadow-sm"
+          type="button"
+          aria-label="Stop Presentation"
         >
           <span className="material-symbols-outlined text-xl">stop_circle</span>
           Stop Presentation
@@ -294,7 +296,7 @@ export const PresentationState: React.FC<PresentationStateProps> = ({
         <span className="text-gray-400">Target Time: {topic.pres}</span>
       </div>
 
-      <div className="flex-grow flex flex-col space-y-2">
+      <div className="grow flex flex-col space-y-2">
         <label className="text-xs font-bold text-[#685F58] uppercase tracking-wider">
           Presentation Transcript (Live Speech or Text Input)
         </label>
@@ -302,14 +304,15 @@ export const PresentationState: React.FC<PresentationStateProps> = ({
           value={displayValue}
           onChange={(e) => handleTranscriptChange(e.target.value)}
           placeholder="Speak into your mic or start typing your explanation here..."
-          className="w-full flex-grow min-h-[220px] bg-white border border-[#F2EDE6] rounded-2xl p-5 text-base md:text-lg text-[#1A1A24] leading-relaxed focus:ring-2 focus:ring-[#F28C56]/30 focus:outline-none resize-none shadow-sm font-sans"
+          className="w-full grow min-h-55 bg-white border border-[#F2EDE6] rounded-2xl p-5 text-base md:text-lg text-[#1A1A24] leading-relaxed focus:ring-2 focus:ring-[#F28C56]/30 focus:outline-none resize-none shadow-sm font-sans"
         />
       </div>
 
       <div className="flex justify-center pt-4">
         <button
           onClick={handleStop}
-          className="bg-gradient-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-lg px-8 py-3.5 rounded-full transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center gap-2 active:scale-95 cursor-pointer"
+          className="bg-linear-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-lg px-8 py-3.5 rounded-full transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center gap-2 active:scale-95 cursor-pointer"
+          aria-label="Finish & Review Presentation"
         >
           Finish & Review Presentation
           <span className="material-symbols-outlined font-light text-xl">

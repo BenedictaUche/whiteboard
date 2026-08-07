@@ -155,6 +155,7 @@ export const FeedbackState: React.FC<FeedbackStateProps> = ({
                   key={idx}
                   onClick={() => onSelectSuggestedTopic?.(item)}
                   className="px-4 py-2 bg-white border border-[#F2EDE6] text-[#685F58] rounded-xl text-sm shadow-sm hover:border-[#F28C56]/50 hover:text-[#944a19] transition-colors cursor-pointer active:scale-95"
+                  aria-label={`Select suggested topic: ${item}`}
                 >
                   {item}
                 </button>
@@ -169,7 +170,8 @@ export const FeedbackState: React.FC<FeedbackStateProps> = ({
       <div className="pt-8 flex justify-center">
         <button
           onClick={onStartNewDrill}
-          className="bg-gradient-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-lg px-10 py-4 rounded-full transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center gap-2 active:scale-95 cursor-pointer"
+          className="bg-linear-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-lg px-10 py-4 rounded-full transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center gap-2 active:scale-95 cursor-pointer"
+          aria-label="Start a new drill"
         >
           Start New Drill
           <span className="material-symbols-outlined font-light text-xl">refresh</span>

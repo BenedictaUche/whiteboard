@@ -43,23 +43,22 @@ export const ResearchState: React.FC<ResearchStateProps> = ({
   };
 
   return (
-    <section className="fade-in flex flex-col items-center justify-center min-h-[550px] text-center space-y-8 w-full max-w-[800px] mx-auto px-4">
+    <section className="fade-in flex flex-col items-center justify-center min-h-137.5 text-center space-y-8 w-full max-w-200 mx-auto px-4">
       {/* Header */}
       <div className="space-y-2">
         <span className="text-[12px] font-bold text-[#685F58] uppercase tracking-widest bg-[#E8F3E8] px-4 py-1.5 rounded-full text-[#5C7A56]">
           Research Phase • {topic.title}
         </span>
 
-        {/* Large Timer */}
         <div className="font-display text-5xl md:text-7xl text-[#1A1A24] font-mono tabular-nums tracking-tighter pt-4">
           {formatTime(timeLeft)}
         </div>
 
-        {/* Controls */}
         <div className="flex items-center justify-center gap-3 pt-2 text-sm text-[#7D7068]">
           <button
             onClick={() => setIsRunning(!isRunning)}
             className="px-3 py-1 bg-white border border-[#F2EDE6] rounded-lg shadow-sm hover:bg-gray-50 flex items-center gap-1 cursor-pointer"
+            aria-label={isRunning ? 'Pause Timer' : 'Resume'}
           >
             <span className="material-symbols-outlined text-base">
               {isRunning ? 'pause' : 'play_arrow'}
@@ -69,6 +68,7 @@ export const ResearchState: React.FC<ResearchStateProps> = ({
           <button
             onClick={() => setTimeLeft(defaultMinutes * 60)}
             className="px-3 py-1 bg-white border border-[#F2EDE6] rounded-lg shadow-sm hover:bg-gray-50 flex items-center gap-1 cursor-pointer"
+            aria-label="Reset Timer"
           >
             <span className="material-symbols-outlined text-base">restart_alt</span>
             Reset
@@ -94,6 +94,7 @@ export const ResearchState: React.FC<ResearchStateProps> = ({
               <button
                 onClick={() => setShowKeyPoints(!showKeyPoints)}
                 className="text-xs text-[#944a19] font-medium underline cursor-pointer"
+                aria-label={showKeyPoints ? 'Hide Key Talking Points' : 'Show Key Talking Points'}
               >
                 {showKeyPoints ? 'Hide Key Talking Points' : 'Show Key Talking Points'}
               </button>
@@ -128,7 +129,8 @@ export const ResearchState: React.FC<ResearchStateProps> = ({
       <div className="pt-4">
         <button
           onClick={onBeginPresentation}
-          className="bg-gradient-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-lg px-8 py-4 rounded-full transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center gap-2.5 active:scale-95 cursor-pointer"
+          className="bg-linear-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-lg px-8 py-4 rounded-full transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center gap-2.5 active:scale-95 cursor-pointer"
+          aria-label="Begin Presentation"
         >
           Begin Presentation
           <span className="material-symbols-outlined text-xl">mic</span>

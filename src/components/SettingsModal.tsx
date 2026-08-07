@@ -18,7 +18,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-      <div className="bg-[#FDFCF5] border border-[#F2EDE6] rounded-[32px] p-6 sm:p-8 max-w-md w-full shadow-xl space-y-6 animate-in fade-in zoom-in-95">
+      <div className="bg-[#FDFCF5] border border-[#F2EDE6] rounded-4xl p-6 sm:p-8 max-w-md w-full shadow-xl space-y-6 animate-in fade-in zoom-in-95">
         <div className="flex justify-between items-center pb-3 border-b border-[#F2EDE6]">
           <h3 className="font-display text-xl font-bold text-[#1A1A24] flex items-center gap-2">
             <span className="material-symbols-outlined text-[#F28C56]">settings</span>
@@ -27,6 +27,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 rounded-full p-1 cursor-pointer"
+            aria-label="Close"
           >
             <span className="material-symbols-outlined">close</span>
           </button>
@@ -45,6 +46,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   ? 'border-[#F28C56] bg-white text-[#1A1A24] ring-2 ring-[#F28C56]/20'
                   : 'border-[#F2EDE6] bg-white/50 text-[#685F58]'
               }`}
+              aria-label="Surface Cream Theme"
             >
               <span className="material-symbols-outlined text-base">light_mode</span>
               Surface Cream
@@ -57,6 +59,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   ? 'border-[#82A87D] bg-[#E8F3E8] text-[#3B5436] ring-2 ring-[#82A87D]/30'
                   : 'border-[#F2EDE6] bg-white/50 text-[#685F58]'
               }`}
+              aria-label="Sage Green Theme"
             >
               <span className="material-symbols-outlined text-base">eco</span>
               Zen Sage
@@ -69,6 +72,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   ? 'border-[#1A1A24] bg-[#1A1A24] text-white ring-2 ring-gray-400/30'
                   : 'border-[#F2EDE6] bg-white/50 text-[#685F58]'
               }`}
+              aria-label="Dark Zen Theme"
             >
               <span className="material-symbols-outlined text-base">dark_mode</span>
               Dark Zen
@@ -95,6 +99,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           <button
             onClick={onClose}
             className="bg-[#F28C56] text-white text-sm font-medium px-6 py-2.5 rounded-full shadow-sm hover:bg-[#e07742] transition-colors cursor-pointer"
+            aria-label="Close Settings Modal"
           >
             Done
           </button>
