@@ -1,0 +1,6 @@
+{
+  "name": "Whiteboard",
+  "description": "Technical interview practice platform for frontend, backend, and system design drills with instant AI mentor feedback.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

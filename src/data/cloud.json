@@ -1,0 +1,122 @@
+[
+  {
+    "id": "cdn-cache-invalidation",
+    "title": "Explain CDN Caching & Cache-Control",
+    "difficulty": "Intermediate",
+    "tags": ["cdn", "http", "performance"],
+    "researchTime": 10,
+    "presentationTime": 3,
+    "hint": "Explain HTTP headers (Cache-Control, ETag, max-age, s-maxage, stale-while-revalidate) and edge purge invalidation techniques.",
+    "keyPoints": [
+      "Origin server vs Edge Locations",
+      "Cache-Control directives: public, private, no-cache, no-store",
+      "Validation headers: ETag and If-None-Match",
+      "Purging strategies: Tag-based invalidation vs TTL expiry"
+    ]
+  },
+  {
+    "id": "system-design-rate-limiter",
+    "title": "Design an API Rate Limiter",
+    "difficulty": "Hard",
+    "tags": ["system-design", "distributed", "scalability"],
+    "researchTime": 15,
+    "presentationTime": 5,
+    "hint": "Compare Token Bucket, Leaking Bucket, Fixed Window Counter, and Sliding Window Log/Counter algorithms in distributed systems.",
+    "keyPoints": [
+      "Token Bucket vs Sliding Window Counter",
+      "Centralized Redis store vs Local Memory Cache",
+      "Race conditions and Atomic Redis Lua Scripts",
+      "HTTP response headers (X-RateLimit-Remaining, Retry-After)"
+    ]
+  },
+  {
+    "id": "load-balancers",
+    "title": "How do Load Balancers work?",
+    "difficulty": "Intermediate",
+    "tags": ["networking", "scalability"],
+    "researchTime": 10,
+    "presentationTime": 3,
+    "hint": "Cover L4 vs L7, round-robin / least-connections / consistent-hash algorithms, and health checks.",
+    "keyPoints": [
+      "L4 vs L7 load balancing",
+      "Round-robin, least-connections, IP-hash",
+      "Active vs passive health checks",
+      "Sticky sessions and TLS termination"
+    ]
+  },
+  {
+    "id": "object-storage",
+    "title": "Object Storage vs Block Storage",
+    "difficulty": "Beginner",
+    "tags": ["storage", "cloud"],
+    "researchTime": 6,
+    "presentationTime": 2,
+    "hint": "Compare flat namespace + metadata vs raw block devices, and when each fits (S3 vs EBS).",
+    "keyPoints": [
+      "Object storage: flat namespace, HTTP access (S3)",
+      "Block storage: mounted volumes, low latency (EBS)",
+      "Durability, consistency, and cost trade-offs",
+      "Use cases for media archives vs databases"
+    ]
+  },
+  {
+    "id": "serverless-cold-starts",
+    "title": "Serverless Cold Starts: causes & mitigations",
+    "difficulty": "Hard",
+    "tags": ["serverless", "performance"],
+    "researchTime": 12,
+    "presentationTime": 4,
+    "hint": "Explain init phases, container reuse, provisioned concurrency, and language/runtime trade-offs.",
+    "keyPoints": [
+      "What happens during a cold start",
+      "Runtime differences (Node vs Java vs Python)",
+      "Provisioned concurrency and warmers",
+      "Bundle size and init code optimizations"
+    ]
+  },
+  {
+    "id": "iac",
+    "title": "What is Infrastructure as Code?",
+    "difficulty": "Intermediate",
+    "tags": ["devops", "automation"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Cover declarative vs imperative tooling (Terraform vs Ansible), state management, and idempotency.",
+    "keyPoints": [
+      "Declarative vs imperative paradigms",
+      "State management and drift detection",
+      "Plan/apply workflows",
+      "Modules and reusable infrastructure"
+    ]
+  },
+  {
+    "id": "vpc-networking",
+    "title": "VPC Networking Fundamentals",
+    "difficulty": "Intermediate",
+    "tags": ["networking", "security"],
+    "researchTime": 10,
+    "presentationTime": 3,
+    "hint": "Subnets, route tables, NAT, internet gateways, NACLs vs security groups.",
+    "keyPoints": [
+      "Public vs private subnets",
+      "Route tables and internet gateways",
+      "NAT for outbound traffic",
+      "Security groups vs NACLs"
+    ]
+  },
+  {
+    "id": "observability",
+    "title": "Three Pillars of Observability",
+    "difficulty": "Intermediate",
+    "tags": ["monitoring", "reliability"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Logs, metrics, and traces — what each excels at and how to correlate them.",
+    "keyPoints": [
+      "Logs for discrete events",
+      "Metrics for aggregated trends",
+      "Distributed traces for request flows",
+      "Correlation IDs and tooling"
+    ]
+  }
+]

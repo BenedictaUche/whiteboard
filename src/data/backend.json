@@ -1,0 +1,122 @@
+[
+  {
+    "id": "sql-joins",
+    "title": "Explain SQL Joins and Performance",
+    "difficulty": "Intermediate",
+    "tags": ["sql", "databases", "performance"],
+    "researchTime": 10,
+    "presentationTime": 3,
+    "hint": "Distinguish INNER, LEFT OUTER, RIGHT OUTER, FULL OUTER, and CROSS joins, and explain how indexes optimize join operations.",
+    "keyPoints": [
+      "INNER vs OUTER joins venn diagram mapping",
+      "Nested Loop Join vs Hash Join vs Merge Join algorithms",
+      "Impact of foreign key indexing",
+      "Avoiding N+1 query traps"
+    ]
+  },
+  {
+    "id": "dependency-injection",
+    "title": "What is Dependency Injection?",
+    "difficulty": "Hard",
+    "tags": ["architecture", "solid", "testing"],
+    "researchTime": 15,
+    "presentationTime": 4,
+    "hint": "Explain Inversion of Control (IoC), decoupling dependencies, constructor vs setter injection, and ease of unit testing with mocks.",
+    "keyPoints": [
+      "Inversion of Control principle (SOLID)",
+      "Constructor vs Property/Method Injection",
+      "Decoupling implementation from interface",
+      "Testability & stubbing external services"
+    ]
+  },
+  {
+    "id": "garbage-collection",
+    "title": "How does Garbage Collection work in V8?",
+    "difficulty": "Hard",
+    "tags": ["memory", "runtime", "performance"],
+    "researchTime": 15,
+    "presentationTime": 5,
+    "hint": "Detail Generational Garbage Collection (Young Generation / Scavenge vs Old Generation / Mark-Sweep-Compact) and memory leaks.",
+    "keyPoints": [
+      "Generational Hypothesis (most objects die young)",
+      "Scavenger algorithm & Cheney copying in Nursery",
+      "Mark-Sweep and Mark-Compact in Old Space",
+      "Common JS memory leaks (unclosed closures, detached DOM, global scope)"
+    ]
+  },
+  {
+    "id": "acid-transactions",
+    "title": "Explain ACID Transactions",
+    "difficulty": "Intermediate",
+    "tags": ["databases", "transactions"],
+    "researchTime": 10,
+    "presentationTime": 3,
+    "hint": "Atomicity, Consistency, Isolation, Durability — what each guarantees and how databases implement them.",
+    "keyPoints": [
+      "Atomicity and rollback logs",
+      "Consistency via constraints and triggers",
+      "Isolation levels and anomalies (dirty, non-repeatable, phantom)",
+      "Durability via write-ahead logs"
+    ]
+  },
+  {
+    "id": "rest-vs-grpc",
+    "title": "REST vs gRPC: when to use which?",
+    "difficulty": "Intermediate",
+    "tags": ["api", "architecture"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Compare HTTP/JSON + REST vs HTTP/2 + Protobuf, focusing on tooling, performance, streaming, and contract evolution.",
+    "keyPoints": [
+      "Wire formats: text JSON vs binary Protobuf",
+      "HTTP/1.1 vs HTTP/2 multiplexing",
+      "Streaming support (unary, server, client, bidirectional)",
+      "Tooling and schema-first development"
+    ]
+  },
+  {
+    "id": "caching-strategies",
+    "title": "Caching Strategies in Backend Systems",
+    "difficulty": "Hard",
+    "tags": ["performance", "distributed", "caching"],
+    "researchTime": 12,
+    "presentationTime": 4,
+    "hint": "Cover cache-aside, read-through, write-through, write-behind, and invalidation patterns.",
+    "keyPoints": [
+      "Cache-aside vs read-through",
+      "Write-through and write-behind",
+      "TTL, eviction policies (LRU, LFU)",
+      "Cache stampede and thundering herd"
+    ]
+  },
+  {
+    "id": "auth-vs-authz",
+    "title": "Authentication vs Authorization",
+    "difficulty": "Beginner",
+    "tags": ["security", "auth"],
+    "researchTime": 5,
+    "presentationTime": 2,
+    "hint": "Authentication proves identity; authorization grants access. Cover session, JWT, OAuth2, OIDC.",
+    "keyPoints": [
+      "Authentication verifies identity",
+      "Authorization grants permissions",
+      "Session cookies vs JWT",
+      "OAuth2 and OpenID Connect flows"
+    ]
+  },
+  {
+    "id": "idempotency",
+    "title": "What is an Idempotent Endpoint?",
+    "difficulty": "Intermediate",
+    "tags": ["api", "reliability"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Explain how idempotency keys prevent duplicate side effects on retries, with examples from payments and queues.",
+    "keyPoints": [
+      "Idempotency keys and request fingerprints",
+      "HTTP methods: GET, PUT, DELETE are idempotent",
+      "Storing responses for replay",
+      "Race conditions in concurrent retries"
+    ]
+  }
+]

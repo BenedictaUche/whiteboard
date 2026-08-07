@@ -1,0 +1,122 @@
+[
+  {
+    "id": "ci-cd-pipelines",
+    "title": "Designing a CI/CD Pipeline",
+    "difficulty": "Intermediate",
+    "tags": ["ci-cd", "automation"],
+    "researchTime": 10,
+    "presentationTime": 3,
+    "hint": "Walk through source, build, test, deploy stages and gates, including blue/green and canary.",
+    "keyPoints": [
+      "Stages: lint, test, build, deploy",
+      "Pipeline-as-code (YAML)",
+      "Trunk-based development vs GitFlow",
+      "Blue/green and canary deployments"
+    ]
+  },
+  {
+    "id": "kubernetes-pods",
+    "title": "Kubernetes Pods, Deployments, and Services",
+    "difficulty": "Hard",
+    "tags": ["kubernetes", "orchestration"],
+    "researchTime": 15,
+    "presentationTime": 5,
+    "hint": "Cover the smallest deployable unit, controllers, networking abstractions, and rolling updates.",
+    "keyPoints": [
+      "Pods share network namespace",
+      "Deployments manage ReplicaSets and rollouts",
+      "Services provide stable virtual IPs",
+      "Rolling updates and readiness probes"
+    ]
+  },
+  {
+    "id": "docker-images",
+    "title": "How do Docker Images & Layers work?",
+    "difficulty": "Intermediate",
+    "tags": ["docker", "containers"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Explain the union filesystem, layer caching, and how COPY/ADD/RUN instructions affect build time.",
+    "keyPoints": [
+      "Union filesystem and immutable layers",
+      "Layer caching and order of instructions",
+      "Multi-stage builds to slim images",
+      "Image registry distribution"
+    ]
+  },
+  {
+    "id": "git-rebase-merge",
+    "title": "git rebase vs git merge",
+    "difficulty": "Beginner",
+    "tags": ["git", "workflow"],
+    "researchTime": 5,
+    "presentationTime": 2,
+    "hint": "Explain linear history via rebase vs preserving branch topology with merge, plus golden rule of rebase.",
+    "keyPoints": [
+      "Rebase rewrites history; merge preserves it",
+      "Never rebase shared branches",
+      "Interactive rebase for cleanups",
+      "Conflict resolution strategies"
+    ]
+  },
+  {
+    "id": "infra-monitoring",
+    "title": "Health Checks and Monitoring in Production",
+    "difficulty": "Intermediate",
+    "tags": ["monitoring", "reliability"],
+    "researchTime": 10,
+    "presentationTime": 3,
+    "hint": "Differentiate liveness vs readiness probes, alerting philosophies, and SLOs/error budgets.",
+    "keyPoints": [
+      "Liveness vs readiness probes",
+      "Golden signals: latency, traffic, errors, saturation",
+      "SLOs, SLIs, and error budgets",
+      "Alert fatigue and meaningful thresholds"
+    ]
+  },
+  {
+    "id": "secrets-management",
+    "title": "Secrets Management for DevOps",
+    "difficulty": "Intermediate",
+    "tags": ["security", "devops"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Vault, KMS, and secret rotation strategies. Why env vars in git are a problem.",
+    "keyPoints": [
+      "Never commit secrets",
+      "Dynamic secrets vs static credentials",
+      "Rotation and short-lived tokens",
+      "Audit logs and access policies"
+    ]
+  },
+  {
+    "id": "terraform-modules",
+    "title": "Terraform Modules and State Management",
+    "difficulty": "Hard",
+    "tags": ["iac", "terraform"],
+    "researchTime": 12,
+    "presentationTime": 4,
+    "hint": "Explain remote state, locking, workspaces, and how to design reusable modules.",
+    "keyPoints": [
+      "Remote state backends (S3, GCS)",
+      "State locking to avoid drift",
+      "Inputs/outputs and module composition",
+      "Workspaces for environment separation"
+    ]
+  },
+  {
+    "id": "service-mesh",
+    "title": "What is a Service Mesh?",
+    "difficulty": "Hard",
+    "tags": ["networking", "microservices"],
+    "researchTime": 12,
+    "presentationTime": 4,
+    "hint": "Sidecar proxies for service-to-service communication: retries, mTLS, traffic shifting.",
+    "keyPoints": [
+      "Sidecar pattern (Envoy, Linkerd)",
+      "Mutual TLS between services",
+      "Traffic splitting for canary releases",
+      "Observability without code changes"
+    ]
+  }
+]

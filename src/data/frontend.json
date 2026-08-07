@@ -1,0 +1,122 @@
+[
+  {
+    "id": "react-suspense",
+    "title": "Explain React Suspense",
+    "difficulty": "Intermediate",
+    "tags": ["react", "concurrent", "data-fetching"],
+    "researchTime": 10,
+    "presentationTime": 3,
+    "hint": "Focus on how Suspense lets components declaratively wait for async operations (data fetching, code splitting) using promises and fallback boundaries.",
+    "keyPoints": [
+      "Declarative fallback UI during async ops",
+      "Integration with React Concurrent Rendering",
+      "Suspense for Data Fetching & Server Components",
+      "Difference between error boundaries and suspense boundaries"
+    ]
+  },
+  {
+    "id": "css-grid-vs-flexbox",
+    "title": "Explain CSS Grid vs Flexbox",
+    "difficulty": "Beginner",
+    "tags": ["css", "layout"],
+    "researchTime": 5,
+    "presentationTime": 2,
+    "hint": "Compare 2D layout (rows + columns in CSS Grid) vs 1D layout (rows or columns in Flexbox) and content-first vs layout-first approaches.",
+    "keyPoints": [
+      "Grid is 2-dimensional (rows & columns simultaneously)",
+      "Flexbox is 1-dimensional (content-driven directional flow)",
+      "grid-template-areas and auto-fill vs flex-wrap",
+      "When to combine Grid and Flexbox"
+    ]
+  },
+  {
+    "id": "js-event-loop",
+    "title": "How does the Event Loop work?",
+    "difficulty": "Hard",
+    "tags": ["javascript", "runtime", "async"],
+    "researchTime": 15,
+    "presentationTime": 5,
+    "hint": "Detail the Call Stack, Web APIs background processing, Microtask Queue (Promises, process.nextTick), and Macrotask Queue (setTimeout, I/O).",
+    "keyPoints": [
+      "Single-threaded execution thread",
+      "Call stack execution & stack frames",
+      "Microtask queue priority over Macrotask queue",
+      "Rendering phase and requestAnimationFrame placement"
+    ]
+  },
+  {
+    "id": "virtual-dom",
+    "title": "How does the Virtual DOM work?",
+    "difficulty": "Intermediate",
+    "tags": ["react", "rendering", "performance"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Explain reconciliation, diffing heuristics (O(n) via keys and component types), and why batching matters.",
+    "keyPoints": [
+      "In-memory representation of UI tree",
+      "Diffing algorithm and heuristics",
+      "Batched updates and reconciliation",
+      "Limitations vs imperative DOM updates"
+    ]
+  },
+  {
+    "id": "browser-cors",
+    "title": "Explain CORS and Preflight Requests",
+    "difficulty": "Intermediate",
+    "tags": ["security", "http", "browser"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Walk through simple vs preflight (OPTIONS) requests, the headers involved, and how servers enforce CORS.",
+    "keyPoints": [
+      "Same-origin policy basics",
+      "Access-Control-Allow-Origin and credentials",
+      "Preflight OPTIONS and the safe-methods rule",
+      "Why custom headers and Content-Type: application/json trigger preflight"
+    ]
+  },
+  {
+    "id": "hooks-rules",
+    "title": "What are the Rules of Hooks?",
+    "difficulty": "Beginner",
+    "tags": ["react", "hooks"],
+    "researchTime": 5,
+    "presentationTime": 2,
+    "hint": "Explain why hooks must be called at the top level and only inside React functions, and how the dispatcher tracks state.",
+    "keyPoints": [
+      "Only call hooks at the top level of components",
+      "Only call hooks from React functions",
+      "Why conditional hooks break the dispatcher",
+      "ESLint plugin enforcement"
+    ]
+  },
+  {
+    "id": "web-accessibility",
+    "title": "How do you make a website accessible?",
+    "difficulty": "Intermediate",
+    "tags": ["a11y", "semantics", "ux"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Cover semantic HTML, ARIA, keyboard navigation, color contrast, and screen reader testing.",
+    "keyPoints": [
+      "Semantic landmarks and headings",
+      "ARIA roles and properties",
+      "Keyboard navigation and focus management",
+      "Contrast ratios and screen reader testing"
+    ]
+  },
+  {
+    "id": "bundlers",
+    "title": "How do modern JS bundlers work?",
+    "difficulty": "Hard",
+    "tags": ["tooling", "build", "performance"],
+    "researchTime": 12,
+    "presentationTime": 4,
+    "hint": "Discuss module graphs, tree shaking, code splitting, and hot module replacement in tools like Vite, Webpack, esbuild.",
+    "keyPoints": [
+      "Module graph construction",
+      "Tree shaking and dead code elimination",
+      "Code splitting strategies (route, dynamic import)",
+      "HMR and dev-server architecture"
+    ]
+  }
+]
