@@ -45,7 +45,7 @@ OPENROUTER_API_KEY=your_api_key
 OPENROUTER_MODEL=
 ```
 
-Start the development server:
+Start the frontend development server:
 
 ```bash
 npm run dev
@@ -55,6 +55,12 @@ The application will be available at:
 
 ```
 http://localhost:5173
+```
+
+For local API routes (`/api/*`) matching production, use:
+
+```bash
+npm run dev:vercel
 ```
 
 ## How It Works

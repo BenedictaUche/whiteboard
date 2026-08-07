@@ -1,11 +1,3 @@
-/**
- * AI layer for Whiteboard.
- *
- * - Browser code should only call the client helpers (requestFeedback / requestCustomTopic).
- * - The Express server calls the OpenRouter helpers (generateFeedback / generateCustomTopic).
- * Secrets never ship to the client.
- */
-
 import type { AIFeedback, Difficulty, Track } from '../types';
 import {
   FEEDBACK_SYSTEM_PROMPT,
