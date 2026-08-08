@@ -5,6 +5,10 @@ export class AIUnavailableError extends Error {
   }
 }
 
+export function isOpenRouterConfigured(): boolean {
+  return Boolean(process.env.OPENROUTER_API_KEY);
+}
+
 export async function requestFeedback(data: any) {
   const response = await fetch('/api/feedback', {
     method: 'POST',
@@ -51,6 +55,32 @@ export async function generateCustomTopic({ track, difficulty }: { track: string
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new AIUnavailableError(errorData.error || 'Failed to get custom topic');
+  }
+
+  return response.json();
+}
+
+export async function generateFeedback({
+  topicTitle,
+  topicHint,
+  track,
+  mode,
+  transcript, // eslint-disable-next-line camelcase
+  is_custom, notes,
+}: {
+  topicTitle: string; topicHint: string; track: string; mode: string; transcript: string; is_custom: boolean; notes: string;
+}) {
+  const response = await fetch('/api/feedback', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ topicTitle, topicHint, track, mode, transcript, is_custom, notes }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new AIUnavailableError(errorData.error || 'Failed to get feedback');
   }
 
   return response.json();

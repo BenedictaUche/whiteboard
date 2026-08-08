@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { generateFeedback, AIUnavailableError } from '../lib/ai';
+import { generateFeedback, AIUnavailableError } from '@/src/lib/api';
 
 export const config = {
   maxDuration: 60,
@@ -24,10 +24,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const feedback = await generateFeedback({
       topicTitle,
-      topicHint: typeof topic === 'object' ? topic?.hint : undefined,
+      topicHint: typeof topic === 'object' ? topic?.hint : '',
       track: track || 'Software Engineering',
       mode: mode || 'Deep Research',
       transcript,
+      is_custom: typeof topic === 'object' ? topic?.id?.startsWith('custom-') ?? false : false,
       notes: notes || '',
     });
 
