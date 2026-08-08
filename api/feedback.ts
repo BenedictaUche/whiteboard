@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { generateFeedback, AIUnavailableError } from '@/src/lib/api';
+import { generateFeedback, AIUnavailableError } from '../lib/ai.js';
 
 export const config = {
   maxDuration: 60,

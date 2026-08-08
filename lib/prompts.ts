@@ -1,8 +1,3 @@
-/**
- * Centralized AI prompts. Models receive only the system instruction,
- * a user payload, and the expected schema description.
- */
-
 export const FEEDBACK_SYSTEM_PROMPT = `You are a senior staff software engineer acting as an interview mentor.
 You evaluate a candidate's verbal explanation of a technical topic during a mock interview.
 
