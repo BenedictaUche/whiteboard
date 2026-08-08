@@ -12,8 +12,8 @@ import { getAllTopics, getTopicsForTrack, pickRandomTopic } from './data/questio
 import {
   requestFeedback,
   requestCustomTopic,
-  AIUnavailableError,
-} from './lib/ai';
+} from './lib/api';
+import { AIUnavailableError } from './lib/api';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { BackgroundDecorations } from './components/BackgroundDecorations';
