@@ -1,5 +1,28 @@
 @import "tailwindcss";
 
+@theme {
+  --max-width-100: 25rem;        /* 400px */
+  --max-width-150: 37.5rem;      /* 600px */
+  --max-width-175: 43.75rem;     /* 700px */
+  --max-width-200: 50rem;        /* 800px */
+  --max-width-225: 56.25rem;     /* 900px */
+  --max-width-250: 62.5rem;      /* 1000px */
+  --max-width-300: 75rem;        /* 1200px */
+  --width-25: 6.25rem;           /* 100px */
+  --width-37\.5: 9.375rem;       /* 150px */
+  --width-62\.5: 15.625rem;      /* 250px */
+  --width-100: 25rem;            /* 400px */
+  --width-125: 31.25rem;         /* 500px */
+  --height-62\.5: 15.625rem;     /* 250px */
+  --height-100: 25rem;           /* 400px */
+  --height-75: 18.75rem;         /* 300px */
+  --height-137\.5: 34.375rem;    /* 550px */
+  --width-15: 3.75rem;           /* 60px */
+  --height-12: 3rem;             /* 48px */
+  --height-14: 3.5rem;           /* 56px */
+  --height-32: 8rem;             /* 128px */
+}
+
 @layer base {
   :root {
     --color-surface-cream: #FDFCF5;
@@ -11,10 +34,16 @@
     --color-secondary-container: #d8e3d8;
   }
 
+  html, body, #root {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
   body {
     background-color: var(--color-surface-cream);
     color: var(--color-charcoal);
     font-family: 'Inter', sans-serif;
+    -webkit-text-size-adjust: 100%;
   }
 }
 
@@ -71,4 +100,19 @@
 @keyframes pulse {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.1); opacity: 0.7; }
+}
+
+/* Small screen breathing room tweaks — applied broadly so child
+   components don't have to repeat responsive utilities. */
+@layer utilities {
+  .container-pad {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  @media (min-width: 640px) {
+    .container-pad {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
 }

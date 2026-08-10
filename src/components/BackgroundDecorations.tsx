@@ -4,7 +4,7 @@ export const BackgroundDecorations: React.FC = () => {
   return (
     <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
       {/* Top Left Dots */}
-      <div className="absolute top-40 left-12 md:left-32 flex flex-wrap w-15 gap-3 opacity-20">
+      <div className="absolute top-32 sm:top-40 left-4 sm:left-12 md:left-32 flex flex-wrap w-15 gap-3 opacity-20">
         <div className="w-1.5 h-1.5 rounded-full bg-[#6B8B67]" />
         <div className="w-1.5 h-1.5 rounded-full bg-[#6B8B67]" />
         <div className="w-1.5 h-1.5 rounded-full bg-[#6B8B67]" />
@@ -18,7 +18,7 @@ export const BackgroundDecorations: React.FC = () => {
 
       {/* Top Right Sparkle */}
       <svg
-        className="absolute top-32 right-12 md:right-32 text-[#F28C56] opacity-30 w-8 h-8"
+        className="absolute top-28 sm:top-32 right-4 sm:right-12 md:right-32 text-[#F28C56] opacity-30 w-6 h-6 sm:w-8 sm:h-8"
         fill="currentColor"
         viewBox="0 0 24 24"
       >
@@ -27,7 +27,7 @@ export const BackgroundDecorations: React.FC = () => {
 
       {/* Bottom Right Sparkle */}
       <svg
-        className="absolute bottom-40 right-24 md:right-48 text-[#F28C56] opacity-40 w-10 h-10"
+        className="absolute bottom-32 sm:bottom-40 right-6 sm:right-24 md:right-48 text-[#F28C56] opacity-40 w-8 h-8 sm:w-10 sm:h-10"
         fill="currentColor"
         viewBox="0 0 24 24"
       >
@@ -36,7 +36,7 @@ export const BackgroundDecorations: React.FC = () => {
 
       {/* Soft Green blobs bottom left */}
       <svg
-        className="absolute bottom-0 left-0 w-125 h-100 opacity-[0.15]"
+        className="absolute bottom-0 left-0 w-75 sm:w-100 md:w-125 h-62.5 sm:h-75 md:h-100 opacity-[0.12] sm:opacity-[0.15]"
         fill="none"
         viewBox="0 0 500 400"
         xmlns="http://www.w3.org/2000/svg"
@@ -54,7 +54,7 @@ export const BackgroundDecorations: React.FC = () => {
 
       {/* Soft Orange blobs bottom right */}
       <svg
-        className="absolute bottom-0 right-0 w-100 h-75 opacity-[0.15]"
+        className="absolute bottom-0 right-0 w-62.5 sm:w-75 md:w-100 h-50 sm:h-62.5 md:h-75 opacity-[0.12] sm:opacity-[0.15]"
         fill="none"
         viewBox="0 0 400 300"
         xmlns="http://www.w3.org/2000/svg"
@@ -67,7 +67,7 @@ export const BackgroundDecorations: React.FC = () => {
 
       {/* Leaves illustration bottom left */}
       <svg
-        className="absolute bottom-10 left-10 md:left-20 w-37.5 h-62.5 opacity-70"
+        className="absolute bottom-8 sm:bottom-10 left-4 sm:left-10 md:left-20 w-25 sm:w-37.5 h-37.5 sm:h-62.5 opacity-50 sm:opacity-70 hidden sm:block"
         fill="none"
         viewBox="0 0 150 250"
         xmlns="http://www.w3.org/2000/svg"

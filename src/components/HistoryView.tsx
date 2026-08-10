@@ -22,19 +22,19 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
   });
 
   return (
-    <section className="fade-in space-y-8 max-w-225 mx-auto w-full px-4">
+    <section className="fade-in space-y-6 sm:space-y-8 max-w-225 mx-auto w-full px-4">
       {/* Title */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#F2EDE6]">
         <div>
-          <h2 className="font-display text-3xl font-bold text-[#1A1A24]">
+          <h2 className="font-display text-2xl sm:text-3xl font-bold text-[#1A1A24]">
             Drill History
           </h2>
-          <p className="text-sm text-[#685F58] pt-1">
+          <p className="text-sm text-[#685F58] pt-1 break-words">
             Review past presentation drills and AI mentor feedback scores.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {/* Track filter */}
           <select
             value={filterTrack}
@@ -69,12 +69,12 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
       </div>
 
       {filtered.length === 0 ? (
-        <div className="bg-white/60 border border-[#F2EDE6] rounded-4xl p-12 text-center space-y-4">
+        <div className="bg-white/60 border border-[#F2EDE6] rounded-3xl sm:rounded-4xl p-8 sm:p-12 text-center space-y-4">
           <span className="material-symbols-outlined text-4xl text-[#82A87D]">
             history_edu
           </span>
           <h3 className="text-lg font-bold text-[#1A1A24]">No drill records found</h3>
-          <p className="text-sm text-[#685F58] max-w-md mx-auto">
+          <p className="text-sm text-[#685F58] max-w-md mx-auto break-words">
             Complete a practice presentation to save your transcript and AI mentor review here.
           </p>
           <button
@@ -86,7 +86,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
           </button>
         </div>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-3 sm:gap-4">
           {filtered.map((record) => {
             const dateStr = new Date(record.timestamp).toLocaleDateString('en-US', {
               month: 'short',
@@ -100,28 +100,28 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
               <div
                 key={record.id}
                 onClick={() => onSelectRecord(record)}
-                className="bg-white hover:bg-[#FFF9F5] border border-[#F2EDE6] hover:border-[#F28C56]/40 p-6 rounded-2xl shadow-sm transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4"
+                className="bg-white hover:bg-[#FFF9F5] border border-[#F2EDE6] hover:border-[#F28C56]/40 p-4 sm:p-6 rounded-2xl shadow-sm transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4"
               >
-                <div className="space-y-1.5 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#6B8B67] bg-[#E8F3E8] px-2.5 py-0.5 rounded-full">
+                <div className="space-y-1.5 flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#6B8B67] bg-[#E8F3E8] px-2 sm:px-2.5 py-0.5 rounded-full">
                       {record.track}
                     </span>
                     <span className="text-xs text-[#8D827A]">• {record.mode}</span>
-                    <span className="text-xs text-[#8D827A] ml-auto md:ml-0">• {dateStr}</span>
+                    <span className="text-xs text-[#8D827A] ml-auto md:ml-0 break-words">• {dateStr}</span>
                   </div>
-                  <h3 className="font-display text-lg font-bold text-[#1A1A24]">
+                  <h3 className="font-display text-base sm:text-lg font-bold text-[#1A1A24] break-words">
                     {record.topic.title}
                   </h3>
-                  <p className="text-xs text-[#685F58] line-clamp-1 italic">
+                  <p className="text-xs text-[#685F58] line-clamp-1 italic break-words">
                     "{record.transcript}"
                   </p>
                 </div>
 
-                <div className="flex items-center gap-4 shrink-0">
+                <div className="flex items-center justify-between md:justify-end gap-3 sm:gap-4 shrink-0">
                   {record.feedback && (
                     <div className="text-right">
-                      <div className="text-2xl font-bold font-display text-[#E87333]">
+                      <div className="text-xl sm:text-2xl font-bold font-display text-[#E87333]">
                         {Number.isFinite(record.feedback.overallScore)
                           ? Math.round(record.feedback.overallScore)
                           : '—'}

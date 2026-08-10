@@ -277,7 +277,7 @@ export default function App() {
         onOpenSettings={() => setIsSettingsOpen(true)}
       />
 
-      <main className="grow w-full max-w-250 mx-auto px-4 sm:px-8 pt-8 md:pt-12 pb-16 flex flex-col relative z-10">
+      <main className="grow w-full max-w-250 mx-auto px-4 sm:px-6 md:px-8 pt-4 sm:pt-6 md:pt-12 pb-12 sm:pb-16 flex flex-col relative z-10">
         {currentStep === 'selection' && (
           <TopicSelectionState
             selectedTrack={selectedTrack}

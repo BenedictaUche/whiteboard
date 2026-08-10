@@ -24,23 +24,23 @@ export const FeedbackState: React.FC<FeedbackStateProps> = ({
     'Your mentor reviewed this presentation. See the details below.';
 
   return (
-    <section className="fade-in space-y-12 max-w-[800px] mx-auto w-full px-4">
+    <section className="fade-in space-y-10 sm:space-y-12 max-w-200 mx-auto w-full px-4">
       <div className="text-center space-y-4">
         <div className="inline-block px-4 py-1 bg-[#E8F3E8] text-[#5C7A56] rounded-full font-bold text-[11px] uppercase tracking-widest">
           Session Review
         </div>
-        <h2 className="font-display text-3xl md:text-4xl lg:text-[44px] text-[#1A1A24] font-bold">
+        <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-[44px] text-[#1A1A24] font-bold wrap-break-word">
           Feedback from your mentor
         </h2>
-        <p className="font-handwriting text-2xl md:text-3xl text-[#685F58] italic max-w-2xl mx-auto leading-tight pt-2">
-          "{summary}"
+        <p className="font-handwriting text-xl sm:text-2xl md:text-3xl text-[#685F58] italic max-w-2xl mx-auto leading-tight pt-2 px-2 wrap-break-word">
+          {summary}
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-8 border-y border-[#F2EDE6]">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 py-6 sm:py-8 border-y border-[#F2EDE6]">
         <div className="text-center space-y-1 relative flex flex-col items-center justify-center">
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <svg className="w-16 h-16 text-[#F28C56]/20" viewBox="0 0 100 100">
+            <svg className="w-12 h-12 sm:w-16 sm:h-16 text-[#F28C56]/20" viewBox="0 0 100 100">
               <path
                 d="M50,10 A40,40 0 1,1 49.9,10"
                 fill="none"
@@ -56,44 +56,44 @@ export const FeedbackState: React.FC<FeedbackStateProps> = ({
               />
             </svg>
           </div>
-          <div className="text-[#E87333] font-display text-3xl md:text-4xl font-bold">
+          <div className="text-[#E87333] font-display text-2xl sm:text-3xl md:text-4xl font-bold">
             {formatScore(feedback.overallScore, 0)}
           </div>
-          <div className="text-[12px] font-bold text-[#D3C7BF] tracking-wider uppercase">
+          <div className="text-[10px] sm:text-[12px] font-bold text-[#D3C7BF] tracking-wider uppercase">
             Overall /100
           </div>
         </div>
 
         <div className="text-center space-y-1 flex flex-col items-center justify-center">
-          <div className="text-[#1A1A24] font-display text-3xl md:text-4xl font-bold">
+          <div className="text-[#1A1A24] font-display text-2xl sm:text-3xl md:text-4xl font-bold">
             {formatScore(feedback.technicalAccuracy)}
           </div>
-          <div className="text-[12px] font-bold text-[#D3C7BF] tracking-wider uppercase">
+          <div className="text-[10px] sm:text-[12px] font-bold text-[#D3C7BF] tracking-wider uppercase">
             Accuracy
           </div>
         </div>
 
         <div className="text-center space-y-1 flex flex-col items-center justify-center">
-          <div className="text-[#1A1A24] font-display text-3xl md:text-4xl font-bold">
+          <div className="text-[#1A1A24] font-display text-2xl sm:text-3xl md:text-4xl font-bold">
             {formatScore(feedback.communication)}
           </div>
-          <div className="text-[12px] font-bold text-[#D3C7BF] tracking-wider uppercase">
+          <div className="text-[10px] sm:text-[12px] font-bold text-[#D3C7BF] tracking-wider uppercase">
             Clarity
           </div>
         </div>
 
         <div className="text-center space-y-1 flex flex-col items-center justify-center">
-          <div className="text-[#1A1A24] font-display text-3xl md:text-4xl font-bold">
+          <div className="text-[#1A1A24] font-display text-2xl sm:text-3xl md:text-4xl font-bold">
             {formatScore(feedback.structure)}
           </div>
-          <div className="text-[12px] font-bold text-[#D3C7BF] tracking-wider uppercase">
+          <div className="text-[10px] sm:text-[12px] font-bold text-[#D3C7BF] tracking-wider uppercase">
             Structure
           </div>
         </div>
       </div>
 
-      <div className="bg-white p-6 sm:p-8 rounded-[32px] space-y-6 shadow-sm border border-[#F2EDE6]">
-        <h3 className="font-display text-xl md:text-2xl text-[#1A1A24] font-bold flex items-center gap-2">
+      <div className="bg-white p-5 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl md:rounded-4xl space-y-5 sm:space-y-6 shadow-sm border border-[#F2EDE6]">
+        <h3 className="font-display text-lg sm:text-xl md:text-2xl text-[#1A1A24] font-bold flex items-center gap-2">
           <span className="material-symbols-outlined text-[#F28C56]">edit_note</span>
           Detailed Review
         </h3>
@@ -102,10 +102,10 @@ export const FeedbackState: React.FC<FeedbackStateProps> = ({
             <ul className="space-y-3">
               {feedback.strengths.map((item, idx) => (
                 <li key={idx} className="flex items-start gap-2">
-                  <span className="material-symbols-outlined text-[#82A87D] text-sm mt-1">
+                  <span className="material-symbols-outlined text-[#82A87D] text-sm mt-1 shrink-0">
                     check_circle
                   </span>
-                  <span>{item}</span>
+                  <span className="wrap-break-word">{item}</span>
                 </li>
               ))}
             </ul>
@@ -118,8 +118,8 @@ export const FeedbackState: React.FC<FeedbackStateProps> = ({
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6 md:gap-8">
-        <div className="space-y-4 bg-white/50 p-6 rounded-2xl border border-[#F2EDE6]">
+      <div className="grid md:grid-cols-2 gap-5 sm:gap-6 md:gap-8">
+        <div className="space-y-4 bg-white/50 p-5 sm:p-6 rounded-2xl border border-[#F2EDE6]">
           <h4 className="text-[12px] font-bold text-[#6B8B67] tracking-widest uppercase">
             Missing Concepts
           </h4>
@@ -130,10 +130,10 @@ export const FeedbackState: React.FC<FeedbackStateProps> = ({
                   key={idx}
                   className="flex items-start gap-2 text-[#685F58] text-sm md:text-base"
                 >
-                  <span className="material-symbols-outlined text-[#F28C56] text-sm mt-1">
+                  <span className="material-symbols-outlined text-[#F28C56] text-sm mt-1 shrink-0">
                     add_circle
                   </span>
-                  <span>{concept}</span>
+                  <span className="wrap-break-word">{concept}</span>
                 </li>
               ))
             ) : (
@@ -144,7 +144,7 @@ export const FeedbackState: React.FC<FeedbackStateProps> = ({
           </ul>
         </div>
 
-        <div className="space-y-4 bg-white/50 p-6 rounded-2xl border border-[#F2EDE6]">
+        <div className="space-y-4 bg-white/50 p-5 sm:p-6 rounded-2xl border border-[#F2EDE6]">
           <h4 className="text-[12px] font-bold text-[#6B8B67] tracking-widest uppercase">
             Suggested Follow-Up Topics
           </h4>
@@ -154,7 +154,7 @@ export const FeedbackState: React.FC<FeedbackStateProps> = ({
                 <button
                   key={idx}
                   onClick={() => onSelectSuggestedTopic?.(item)}
-                  className="px-4 py-2 bg-white border border-[#F2EDE6] text-[#685F58] rounded-xl text-sm shadow-sm hover:border-[#F28C56]/50 hover:text-[#944a19] transition-colors cursor-pointer active:scale-95"
+                  className="px-3 sm:px-4 py-2 bg-white border border-[#F2EDE6] text-[#685F58] rounded-xl text-sm shadow-sm hover:border-[#F28C56]/50 hover:text-[#944a19] transition-colors cursor-pointer active:scale-95 wrap-break-word text-left"
                   aria-label={`Select suggested topic: ${item}`}
                 >
                   {item}
@@ -167,10 +167,10 @@ export const FeedbackState: React.FC<FeedbackStateProps> = ({
         </div>
       </div>
 
-      <div className="pt-8 flex justify-center">
+      <div className="pt-4 sm:pt-8 flex justify-center">
         <button
           onClick={onStartNewDrill}
-          className="bg-linear-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-lg px-10 py-4 rounded-full transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center gap-2 active:scale-95 cursor-pointer"
+          className="w-full sm:w-auto bg-linear-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-4 rounded-full transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
           aria-label="Start a new drill"
         >
           Start New Drill

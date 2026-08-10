@@ -43,21 +43,21 @@ export const ResearchState: React.FC<ResearchStateProps> = ({
   };
 
   return (
-    <section className="fade-in flex flex-col items-center justify-center min-h-137.5 text-center space-y-8 w-full max-w-200 mx-auto px-4">
+    <section className="fade-in flex flex-col items-center justify-center min-h-137.5 text-center space-y-6 sm:space-y-8 w-full max-w-200 mx-auto px-4">
       {/* Header */}
-      <div className="space-y-2">
-        <span className="text-[12px] font-bold text-[#685F58] uppercase tracking-widest bg-[#E8F3E8] px-4 py-1.5 rounded-full text-[#5C7A56]">
+      <div className="space-y-2 w-full">
+        <span className="inline-block text-[11px] sm:text-[12px] font-bold text-[#685F58] uppercase tracking-widest bg-[#E8F3E8] px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[#5C7A56] max-w-full break-words">
           Research Phase • {topic.title}
         </span>
 
-        <div className="font-display text-5xl md:text-7xl text-[#1A1A24] font-mono tabular-nums tracking-tighter pt-4">
+        <div className="font-display text-5xl sm:text-6xl md:text-7xl text-[#1A1A24] font-mono tabular-nums tracking-tighter pt-4">
           {formatTime(timeLeft)}
         </div>
 
-        <div className="flex items-center justify-center gap-3 pt-2 text-sm text-[#7D7068]">
+        <div className="flex items-center justify-center gap-2 sm:gap-3 pt-2 text-sm text-[#7D7068] flex-wrap">
           <button
             onClick={() => setIsRunning(!isRunning)}
-            className="px-3 py-1 bg-white border border-[#F2EDE6] rounded-lg shadow-sm hover:bg-gray-50 flex items-center gap-1 cursor-pointer"
+            className="px-3 py-1 bg-white border border-[#F2EDE6] rounded-lg shadow-sm hover:bg-gray-50 flex items-center gap-1 cursor-pointer text-sm"
             aria-label={isRunning ? 'Pause Timer' : 'Resume'}
           >
             <span className="material-symbols-outlined text-base">
@@ -67,7 +67,7 @@ export const ResearchState: React.FC<ResearchStateProps> = ({
           </button>
           <button
             onClick={() => setTimeLeft(defaultMinutes * 60)}
-            className="px-3 py-1 bg-white border border-[#F2EDE6] rounded-lg shadow-sm hover:bg-gray-50 flex items-center gap-1 cursor-pointer"
+            className="px-3 py-1 bg-white border border-[#F2EDE6] rounded-lg shadow-sm hover:bg-gray-50 flex items-center gap-1 cursor-pointer text-sm"
             aria-label="Reset Timer"
           >
             <span className="material-symbols-outlined text-base">restart_alt</span>
@@ -76,14 +76,14 @@ export const ResearchState: React.FC<ResearchStateProps> = ({
         </div>
       </div>
 
-      <p className="font-sans text-base md:text-lg text-[#685F58] max-w-lg mx-auto font-light leading-relaxed">
+      <p className="font-sans text-base md:text-lg text-[#685F58] max-w-lg mx-auto font-light leading-relaxed px-2">
         You may use any resources while researching. Prepare your thoughts and jottings below to explain the topic clearly.
       </p>
 
       {/* Hints & Key points toggle */}
       {topic.hint && (
-        <div className="w-full text-left bg-white/80 border border-[#F2EDE6] rounded-2xl p-5 shadow-sm space-y-3">
-          <div className="flex justify-between items-center">
+        <div className="w-full text-left bg-white/80 border border-[#F2EDE6] rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
             <span className="font-semibold text-sm text-[#3B5436] flex items-center gap-1.5">
               <span className="material-symbols-outlined text-base text-[#82A87D]">
                 lightbulb
@@ -93,17 +93,17 @@ export const ResearchState: React.FC<ResearchStateProps> = ({
             {topic.keyPoints && topic.keyPoints.length > 0 && (
               <button
                 onClick={() => setShowKeyPoints(!showKeyPoints)}
-                className="text-xs text-[#944a19] font-medium underline cursor-pointer"
+                className="text-xs text-[#944a19] font-medium underline cursor-pointer self-start sm:self-auto"
                 aria-label={showKeyPoints ? 'Hide Key Talking Points' : 'Show Key Talking Points'}
               >
                 {showKeyPoints ? 'Hide Key Talking Points' : 'Show Key Talking Points'}
               </button>
             )}
           </div>
-          <p className="text-sm text-[#685F58] leading-relaxed">{topic.hint}</p>
+          <p className="text-sm text-[#685F58] leading-relaxed break-words">{topic.hint}</p>
 
           {showKeyPoints && topic.keyPoints && (
-            <ul className="text-xs text-[#54433a] space-y-1.5 pt-2 border-t border-[#F2EDE6] list-disc list-inside">
+            <ul className="text-xs text-[#54433a] space-y-1.5 pt-2 border-t border-[#F2EDE6] list-disc list-inside break-words">
               {topic.keyPoints.map((point, idx) => (
                 <li key={idx}>{point}</li>
               ))}
@@ -126,10 +126,10 @@ export const ResearchState: React.FC<ResearchStateProps> = ({
       </div>
 
       {/* Begin Presentation Action */}
-      <div className="pt-4">
+      <div className="pt-2 sm:pt-4">
         <button
           onClick={onBeginPresentation}
-          className="bg-linear-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-lg px-8 py-4 rounded-full transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center gap-2.5 active:scale-95 cursor-pointer"
+          className="w-full sm:w-auto bg-linear-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 rounded-full transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center justify-center gap-2.5 active:scale-95 cursor-pointer"
           aria-label="Begin Presentation"
         >
           Begin Presentation

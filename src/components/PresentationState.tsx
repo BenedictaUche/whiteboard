@@ -227,7 +227,7 @@ export const PresentationState: React.FC<PresentationStateProps> = ({
       case 'error':
         return 'Speech recognition stopped unexpectedly. You can keep typing below.';
       case 'listening':
-        return 'Live Speech Recognition active (speak into microphone or edit below)';
+        return 'Live Speech Recognition active';
       case 'stopped':
         return 'Speech recognition stopped.';
       default:
@@ -241,20 +241,20 @@ export const PresentationState: React.FC<PresentationStateProps> = ({
       : transcript;
 
   return (
-    <section className="fade-in flex flex-col min-h-137.5 w-full max-w-225 mx-auto space-y-8">
-      <div className="flex justify-between items-center pb-6 border-b border-[#F2EDE6]">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mic-pulse shadow-sm">
+    <section className="fade-in flex flex-col min-h-137.5 w-full max-w-225 mx-auto space-y-6 sm:space-y-8 px-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pb-6 border-b border-[#F2EDE6]">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+          <div className="w-11 h-11 sm:w-12 sm:h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mic-pulse shadow-sm shrink-0">
             <span
-              className="material-symbols-outlined text-2xl"
+              className="material-symbols-outlined text-xl sm:text-2xl"
               style={{ fontVariationSettings: "'FILL' 1" }}
             >
               mic
             </span>
           </div>
-          <div>
-            <div className="text-[12px] font-bold text-[#685F58] uppercase tracking-widest">
-              RECORDING PRESENTATION • {topic.title}
+          <div className="min-w-0 flex-1">
+            <div className="text-[11px] sm:text-[12px] font-bold text-[#685F58] uppercase tracking-widest truncate">
+              {topic.title}
             </div>
             <div className="font-display text-2xl md:text-3xl font-bold text-[#1A1A24] tabular-nums tracking-tight">
               {formatTimer(remainingSeconds)}
@@ -264,7 +264,7 @@ export const PresentationState: React.FC<PresentationStateProps> = ({
 
         <button
           onClick={handleStop}
-          className="bg-white border border-red-200 text-red-600 hover:bg-red-50 transition-colors font-medium text-base px-6 py-2.5 rounded-full flex items-center gap-2 active:scale-95 cursor-pointer shadow-sm"
+          className="w-full sm:w-auto bg-white border border-red-200 text-red-600 hover:bg-red-50 transition-colors font-medium text-sm sm:text-base px-4 sm:px-6 py-2.5 rounded-full flex items-center justify-center gap-2 active:scale-95 cursor-pointer shadow-sm"
           type="button"
           aria-label="Stop Presentation"
         >
@@ -278,43 +278,43 @@ export const PresentationState: React.FC<PresentationStateProps> = ({
           <span className="font-bold text-[#6B8B67] uppercase tracking-wider block">
             Your Research Notes Reference:
           </span>
-          <p className="line-clamp-2 italic">{notes}</p>
+          <p className="line-clamp-2 italic break-words">{notes}</p>
         </div>
       )}
 
-      <div className="flex items-center justify-between text-xs text-[#7D7068]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 text-xs text-[#7D7068]">
         <span className="flex items-center gap-1.5">
           <span
-            className={`w-2 h-2 rounded-full ${
+            className={`w-2 h-2 rounded-full shrink-0 ${
               speechStatus === 'listening' && isRecording
                 ? 'bg-red-500 animate-ping'
                 : 'bg-gray-400'
             }`}
           />
-          {statusMessage}
+          <span className="break-words">{statusMessage}</span>
         </span>
-        <span className="text-gray-400">Target Time: {topic.pres}</span>
+        <span className="text-gray-400 sm:text-right">Target Time: {topic.pres}</span>
       </div>
 
       <div className="grow flex flex-col space-y-2">
         <label className="text-xs font-bold text-[#685F58] uppercase tracking-wider">
-          Presentation Transcript (Live Speech or Text Input)
+          Presentation Transcript
         </label>
         <textarea
           value={displayValue}
           onChange={(e) => handleTranscriptChange(e.target.value)}
           placeholder="Speak into your mic or start typing your explanation here..."
-          className="w-full grow min-h-55 bg-white border border-[#F2EDE6] rounded-2xl p-5 text-base md:text-lg text-[#1A1A24] leading-relaxed focus:ring-2 focus:ring-[#F28C56]/30 focus:outline-none resize-none shadow-sm font-sans"
+          className="w-full grow min-h-55 bg-white border border-[#F2EDE6] rounded-2xl p-4 sm:p-5 text-base md:text-lg text-[#1A1A24] leading-relaxed focus:ring-2 focus:ring-[#F28C56]/30 focus:outline-none resize-none shadow-sm font-sans"
         />
       </div>
 
-      <div className="flex justify-center pt-4">
+      <div className="flex justify-center pt-2 sm:pt-4">
         <button
           onClick={handleStop}
-          className="bg-linear-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-lg px-8 py-3.5 rounded-full transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center gap-2 active:scale-95 cursor-pointer"
+          className="w-full sm:w-auto bg-linear-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-3.5 rounded-full transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
           aria-label="Finish & Review Presentation"
         >
-          Finish & Review Presentation
+          Review Presentation
           <span className="material-symbols-outlined font-light text-xl">
             arrow_forward
           </span>
