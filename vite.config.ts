@@ -18,6 +18,7 @@ function localApiPlugin(): Plugin {
           '/api/health': '/api/health.ts',
           '/api/custom-topic': '/api/custom-topic.ts',
           '/api/feedback': '/api/feedback.ts',
+          '/api/topics': '/api/topics.ts',
         };
 
         const targetFile = routeMap[url.pathname];
@@ -88,11 +89,8 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modify—file watching is disabled to prevent flickering during agent edits.
       port: 3000,
       hmr: process.env.DISABLE_HMR !== 'true',
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
   };

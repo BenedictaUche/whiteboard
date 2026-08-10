@@ -47,10 +47,10 @@ export const ResearchState: React.FC<ResearchStateProps> = ({
       {/* Header */}
       <div className="space-y-2 w-full">
         <span className="inline-block text-[11px] sm:text-[12px] font-bold text-[#685F58] uppercase tracking-widest bg-[#E8F3E8] px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[#5C7A56] max-w-full break-words">
-          Research Phase • {topic.title}
+         {topic.title}
         </span>
 
-        <div className="font-display text-5xl sm:text-6xl md:text-7xl text-[#1A1A24] font-mono tabular-nums tracking-tighter pt-4">
+        <div className="font-display text-5xl sm:text-6xl md:text-7xl font-mono tabular-nums tracking-tighter pt-4">
           {formatTime(timeLeft)}
         </div>
 
@@ -81,7 +81,7 @@ export const ResearchState: React.FC<ResearchStateProps> = ({
       </p>
 
       {/* Hints & Key points toggle */}
-      {topic.hint && (
+      {/* {topic.hint && (
         <div className="w-full text-left bg-white/80 border border-[#F2EDE6] rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
             <span className="font-semibold text-sm text-[#3B5436] flex items-center gap-1.5">
@@ -110,7 +110,7 @@ export const ResearchState: React.FC<ResearchStateProps> = ({
             </ul>
           )}
         </div>
-      )}
+      )} */}
 
       {/* Scratchpad Note Area */}
       <div className="w-full space-y-2 text-left">

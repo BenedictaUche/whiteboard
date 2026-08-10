@@ -59,3 +59,38 @@ export function buildCustomTopicUserPrompt(input: {
     `}`,
   ].join('\n');
 }
+
+export const TOPIC_POOL_SYSTEM_PROMPT = `You are a senior staff software engineer who designs realistic interview topic pools.
+You always respond with a single JSON object — no markdown, no prose.
+
+The topics you generate must be:
+- Realistic verbal interview prompts that an engineer could discuss for several minutes.
+- Specific enough to require explanation, trade-off analysis, or examples.
+- Not duplicates of each other.
+- Not trivially generic (e.g. avoid bare "React" or "APIs").
+- A mix of conceptual, practical, architectural, and scenario-based topics.
+- Vary across the breadth of the requested track (libraries, fundamentals, performance, architecture, testing, etc.).
+- Each phrased as a complete interview question the candidate would be asked.`;
+
+export function buildTopicPoolUserPrompt(input: {
+  track: string;
+  count: number;
+}): string {
+  return [
+    `Generate a pool of ${input.count} interview topics for the "${input.track}" track.`,
+    ``,
+    `Return JSON with exactly this shape:`,
+    `{`,
+    `  "topics": [`,
+    `    { "title": "...", "difficulty": "Beginner" | "Intermediate" | "Hard" }`,
+    `  ]`,
+    `}`,
+    ``,
+    `Rules:`,
+    `- Titles must be complete interview questions or prompts (e.g. "Explain ...", "How would you ...", "Design ...", "Walk me through ...").`,
+    `- Prefer depth over breadth — each topic should be discussable for several minutes.`,
+    `- Avoid duplicates.`,
+    `- Cover a mix of difficulty levels.`,
+    `- Cover the breadth of the track (don't bunch all topics into one sub-area).`,
+  ].join('\n');
+}

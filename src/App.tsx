@@ -8,12 +8,18 @@ import {
   DrillRecord,
   Theme,
 } from './types';
-import { getAllTopics, getTopicsForTrack, pickRandomTopic } from './data/questions';
+import { getTopicsForTrack, getAllTopics } from './data/questions';
 import {
   requestFeedback,
   requestCustomTopic,
+  AIUnavailableError,
 } from './lib/api';
-import { AIUnavailableError } from './lib/api';
+import {
+  ensureTopicPool,
+  invalidateTopicPool,
+  pickFromPool,
+  pickLocalFallback,
+} from './lib/topicPool';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { BackgroundDecorations } from './components/BackgroundDecorations';
@@ -73,6 +79,8 @@ export default function App() {
   const [feedbackError, setFeedbackError] = useState<string | null>(null);
   const [isGeneratingCustom, setIsGeneratingCustom] = useState(false);
   const [customTopicError, setCustomTopicError] = useState<string | null>(null);
+  const [poolLoading, setPoolLoading] = useState(false);
+  const [poolError, setPoolError] = useState<string | null>(null);
 
   const [theme, setTheme] = useState<Theme>('cream');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -88,14 +96,53 @@ export default function App() {
     }
   }, [drillRecords]);
 
+  // Whenever the track changes, fetch/refresh the topic pool and seed `currentTopic`.
   useEffect(() => {
-    const matching = getTopicsForTrack(selectedTrack);
-    if (matching.length === 0) return;
-    const next = pickRandomTopic(selectedTrack, {
-      recentIds: recentTopicIdsRef.current,
-    });
-    setCurrentTopic(next);
-    rememberTopic(next.id);
+    let cancelled = false;
+    setPoolLoading(true);
+    setPoolError(null);
+    ensureTopicPool(selectedTrack)
+      .then((pool) => {
+        if (cancelled) return;
+        if (pool.topics.length === 0) {
+          setPoolError('No topics available for this track right now.');
+          return;
+        }
+        // Pick an initial topic from the pool, prefer one we haven't used recently.
+        const initial = pickFromPool(pool, currentTopic.id, recentTopicIdsRef.current)
+          ?? pool.topics[0];
+        if (!initial) return;
+        rememberTopic(initial.id);
+        setCurrentTopic(initial);
+        // Augment the in-memory topics bank so other components see AI topics too.
+        setTopicsBank((prev) => {
+          const existing = new Set(prev.map((t) => t.id));
+          const merged = [...prev];
+          for (const t of pool.topics) {
+            if (!existing.has(t.id)) merged.push(t);
+          }
+          return merged;
+        });
+      })
+      .catch((e) => {
+        if (cancelled) return;
+        const message =
+          e instanceof AIUnavailableError
+            ? e.message
+            : 'AI topic generation is unavailable right now.';
+        setPoolError(message);
+        // Still seed the current topic from local fallback so the UI never goes blank.
+        const fallback = pickLocalFallback(selectedTrack);
+        rememberTopic(fallback.id);
+        setCurrentTopic(fallback);
+      })
+      .finally(() => {
+        if (!cancelled) setPoolLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTrack]);
 
   useEffect(() => {
@@ -109,13 +156,34 @@ export default function App() {
     }
   }, [theme]);
 
-  const handleSpinAgain = () => {
-    const nextTopic = pickRandomTopic(selectedTrack, {
-      excludeId: currentTopic.id,
-      recentIds: recentTopicIdsRef.current,
-    });
+  const handleSpinAgain = (nextTopic: Topic) => {
     rememberTopic(nextTopic.id);
     setCurrentTopic(nextTopic);
+  };
+
+  const handleRefreshPool = async () => {
+    invalidateTopicPool(selectedTrack);
+    setPoolLoading(true);
+    setPoolError(null);
+    try {
+      const pool = await ensureTopicPool(selectedTrack);
+      if (pool.topics.length > 0) {
+        const next = pickFromPool(pool, currentTopic.id, recentTopicIdsRef.current)
+          ?? pool.topics[0];
+        if (next) {
+          rememberTopic(next.id);
+          setCurrentTopic(next);
+        }
+      }
+    } catch (e) {
+      const message =
+        e instanceof AIUnavailableError
+          ? e.message
+          : 'Could not refresh topic pool.';
+      setPoolError(message);
+    } finally {
+      setPoolLoading(false);
+    }
   };
 
   const handleGenerateCustomTopic = async () => {
@@ -285,12 +353,18 @@ export default function App() {
             selectedMode={selectedMode}
             setSelectedMode={setSelectedMode}
             currentTopic={currentTopic}
-            allTopics={topicsBank}
+            poolTopics={topicsBank.filter(
+              (t) => t.category === selectedTrack || t.id.startsWith('ai-')
+            )}
+            recentTopicIds={recentTopicIdsRef.current}
             onSpinAgain={handleSpinAgain}
             onGetStarted={handleGetStarted}
             onGenerateCustomTopic={handleGenerateCustomTopic}
             isGeneratingCustom={isGeneratingCustom}
             customTopicError={customTopicError}
+            poolLoading={poolLoading}
+            poolError={poolError}
+            onRefreshPool={handleRefreshPool}
           />
         )}
 
