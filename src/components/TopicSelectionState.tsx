@@ -157,11 +157,11 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({
   return (
     <section className="fade-in w-full max-w-225 mx-auto">
       <div className="mb-8 sm:mb-10 text-center space-y-4 px-1">
-        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-bold tracking-tight leading-tight break-words">
+        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-bold tracking-tight leading-tight wrap-break-word">
           Practice Technical Interviews
         </h1>
         <div className="flex justify-center mt-4 sm:mt-6">
-          <svg
+          <svgs
             fill="none"
             height="12"
             viewBox="0 0 40 12"
@@ -174,7 +174,7 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({
               strokeLinecap="round"
               strokeWidth="1.5"
             />
-          </svg>
+          </svgs>
         </div>
       </div>
 
@@ -361,7 +361,7 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({
         <button
           onClick={onGetStarted}
           disabled={isSpinning}
-          className="w-full sm:w-auto bg-linear-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-[15px] sm:text-[16px] px-8 py-3 sm:py-3.5 rounded-full transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center justify-center gap-2 active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full sm:w-auto bg-linear-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-[15px] sm:text-[16px] px-6 py-3 sm:py-3.5 rounded-2xl transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center justify-center gap-2 active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Get Started"
         >
           Get Started

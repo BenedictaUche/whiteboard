@@ -46,7 +46,7 @@ export const ResearchState: React.FC<ResearchStateProps> = ({
     <section className="fade-in flex flex-col items-center justify-center min-h-137.5 text-center space-y-6 sm:space-y-8 w-full max-w-200 mx-auto px-4">
       {/* Header */}
       <div className="space-y-2 w-full">
-        <span className="inline-block text-[11px] sm:text-[12px] font-bold text-[#685F58] uppercase tracking-widest bg-[#E8F3E8] px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[#5C7A56] max-w-full break-words">
+        <span className="inline-block text-[11px] sm:text-[12px] font-bold text-[#685F58] uppercase tracking-widest px-3 sm:px-4 py-1 sm:py-1.5  text-[#5C7A56] max-w-full break-words">
          {topic.title}
         </span>
 
@@ -58,27 +58,27 @@ export const ResearchState: React.FC<ResearchStateProps> = ({
           <button
             onClick={() => setIsRunning(!isRunning)}
             className="px-3 py-1 bg-white border border-[#F2EDE6] rounded-lg shadow-sm hover:bg-gray-50 flex items-center gap-1 cursor-pointer text-sm"
-            aria-label={isRunning ? 'Pause Timer' : 'Resume'}
+            aria-label={isRunning ? 'Pause' : 'Resume'}
           >
             <span className="material-symbols-outlined text-base">
               {isRunning ? 'pause' : 'play_arrow'}
             </span>
-            {isRunning ? 'Pause Timer' : 'Resume'}
+            {isRunning ? 'Pause' : 'Resume'}
           </button>
           <button
             onClick={() => setTimeLeft(defaultMinutes * 60)}
             className="px-3 py-1 bg-white border border-[#F2EDE6] rounded-lg shadow-sm hover:bg-gray-50 flex items-center gap-1 cursor-pointer text-sm"
-            aria-label="Reset Timer"
+            aria-label="Reset"
           >
             <span className="material-symbols-outlined text-base">restart_alt</span>
             Reset
           </button>
         </div>
       </div>
-
+{/*
       <p className="font-sans text-base md:text-lg text-[#685F58] max-w-lg mx-auto font-light leading-relaxed px-2">
         You may use any resources while researching. Prepare your thoughts and jottings below to explain the topic clearly.
-      </p>
+      </p> */}
 
       {/* Hints & Key points toggle */}
       {/* {topic.hint && (
@@ -112,8 +112,7 @@ export const ResearchState: React.FC<ResearchStateProps> = ({
         </div>
       )} */}
 
-      {/* Scratchpad Note Area */}
-      <div className="w-full space-y-2 text-left">
+      {/* <div className="w-full space-y-2 text-left">
         <label className="text-xs font-bold text-[#6B8B67] uppercase tracking-wider block">
           Your Research Notes & Outline (Optional)
         </label>
@@ -123,13 +122,13 @@ export const ResearchState: React.FC<ResearchStateProps> = ({
           placeholder="Jot down bullet points, key terms, trade-offs, or code examples to guide your presentation..."
           className="w-full h-32 bg-white border border-[#F2EDE6] rounded-2xl p-4 text-sm text-[#1A1A24] focus:ring-2 focus:ring-[#F28C56]/30 focus:outline-none resize-none shadow-sm"
         />
-      </div>
+      </div> */}
 
       {/* Begin Presentation Action */}
       <div className="pt-2 sm:pt-4">
         <button
           onClick={onBeginPresentation}
-          className="w-full sm:w-auto bg-linear-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 rounded-full transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center justify-center gap-2.5 active:scale-95 cursor-pointer"
+          className="w-full sm:w-auto bg-linear-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-base sm:text-lg px-6 sm:px-6 py-3 sm:py-2 rounded-2xl transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center justify-center gap-2.5 active:scale-95 cursor-pointer"
           aria-label="Begin Presentation"
         >
           Begin Presentation

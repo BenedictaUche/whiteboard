@@ -241,7 +241,7 @@ export const PresentationState: React.FC<PresentationStateProps> = ({
       : transcript;
 
   return (
-    <section className="fade-in flex flex-col min-h-137.5 w-full max-w-225 mx-auto space-y-6 sm:space-y-8 px-4">
+    <section className="fade-in flex flex-col min-h-137.5 w-full max-w-250 mx-auto space-y-6 sm:space-y-8 px-4">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pb-6 border-b border-[#F2EDE6]">
         <div className="flex items-center gap-3 sm:gap-4 min-w-0">
           <div className="w-11 h-11 sm:w-12 sm:h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mic-pulse shadow-sm shrink-0">
@@ -264,7 +264,7 @@ export const PresentationState: React.FC<PresentationStateProps> = ({
 
         <button
           onClick={handleStop}
-          className="w-full sm:w-auto bg-white border border-red-200 text-red-600 hover:bg-red-50 transition-colors font-medium text-sm sm:text-base px-4 sm:px-6 py-2.5 rounded-full flex items-center justify-center gap-2 active:scale-95 cursor-pointer shadow-sm"
+          className="w-full sm:w-auto bg-white border border-red-200 text-red-600 hover:bg-red-50 transition-colors font-medium text-sm sm:text-sm px-4 sm:px-4 py-2.5 rounded-2xl flex items-center justify-center gap-2 active:scale-95 cursor-pointer shadow-sm"
           type="button"
           aria-label="Stop Presentation"
         >
@@ -293,7 +293,7 @@ export const PresentationState: React.FC<PresentationStateProps> = ({
           />
           <span className="break-words">{statusMessage}</span>
         </span>
-        <span className="text-gray-400 sm:text-right">Target Time: {topic.pres}</span>
+        {/* <span className="text-gray-400 sm:text-right">Target Time: {topic.pres}</span> */}
       </div>
 
       <div className="grow flex flex-col space-y-2">
