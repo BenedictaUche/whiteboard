@@ -2,7 +2,7 @@
 
 Whiteboard is a lightweight interview practice tool for software engineers. It helps developers improve their technical communication by researching engineering topics, presenting their explanations aloud, and receiving AI-powered feedback.
 
-The goal is simple:
+The goal is:
 
 > Practice, Explain and Improve.
 
