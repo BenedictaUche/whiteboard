@@ -230,13 +230,13 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({ select
         </svg>
       </div>
 
-      {(poolLoading || poolError) && (<div className={`max-w-3xl mx-auto mb-6 sm:mb-8 px-4 py-2.5 rounded-2xl border text-xs sm:text-sm text-center break-words ${poolError
+      {/* {(poolLoading || poolError) && (<div className={`max-w-3xl mx-auto mb-6 sm:mb-8 px-4 py-2.5 rounded-2xl border text-xs sm:text-sm text-center break-words ${poolError
                 ? 'bg-[#FFF1EC] border-[#F28C56]/40 text-[#944a19]'
                 : 'bg-white/70 border-[#F2EDE6] text-[#7D7068]'}`} role={poolError ? 'alert' : 'status'}>
           {poolError
                 ? `${poolError} Falling back to built-in topics.`
                 : 'Loading fresh interview topics…'}
-        </div>)}
+        </div>)} */}
 
       <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-6 mt-6 sm:mt-8 px-1">
         <button onClick={handleSpinClick} disabled={isSpinning} className="w-full sm:w-auto bg-white border border-[#F2EDE6] shadow-sm hover:bg-gray-50 text-[#1A1A24] font-medium text-[15px] px-6 py-3 sm:py-3.5 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2.5 active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Spin Again">
