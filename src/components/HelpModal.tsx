@@ -1,26 +1,19 @@
 import React from 'react';
-
 interface HelpModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+    isOpen: boolean;
+    onClose: () => void;
 }
-
 export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-3 sm:p-4">
+    if (!isOpen)
+        return null;
+    return (<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-3 sm:p-4">
       <div className="bg-[#FDFCF5] border border-[#F2EDE6] rounded-3xl sm:rounded-4xl p-5 sm:p-6 md:p-8 max-w-lg w-full shadow-xl space-y-5 sm:space-y-6 animate-in fade-in zoom-in-95 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center pb-3 border-b border-[#F2EDE6]">
           <h3 className="font-display text-lg sm:text-xl font-bold text-[#1A1A24] flex items-center gap-2">
             <span className="material-symbols-outlined text-[#82A87D]">help_outline</span>
             How Whiteboard Works
           </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 rounded-full p-1 cursor-pointer shrink-0"
-            aria-label="Close"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 rounded-full p-1 cursor-pointer shrink-0" aria-label="Close">
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
@@ -75,15 +68,10 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
         </div>
 
         <div className="pt-2 flex justify-end">
-          <button
-            onClick={onClose}
-            className="w-full sm:w-auto bg-[#F28C56] text-white text-sm font-medium px-6 py-2.5 rounded-full shadow-sm hover:bg-[#e07742] transition-colors cursor-pointer"
-            aria-label="Close Help Modal"
-          >
+          <button onClick={onClose} className="w-full sm:w-auto bg-[#F28C56] text-white text-sm font-medium px-6 py-2.5 rounded-full shadow-sm hover:bg-[#e07742] transition-colors cursor-pointer" aria-label="Close Help Modal">
             Got It!
           </button>
         </div>
       </div>
-    </div>
-  );
+    </div>);
 };

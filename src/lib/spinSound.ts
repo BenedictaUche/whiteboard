@@ -1,94 +1,94 @@
 let ctx: AudioContext | null = null;
 let unlocked = false;
 let muted = false;
-
 function getContext(): AudioContext | null {
-  if (muted) return null;
-  if (typeof window === 'undefined') return null;
-  const Ctor =
-    (window as unknown as { AudioContext?: typeof AudioContext; webkitAudioContext?: typeof AudioContext })
-      .AudioContext ||
-    (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-  if (!Ctor) return null;
-  if (!ctx) {
-    try {
-      ctx = new Ctor();
-    } catch {
-      ctx = null;
+    if (muted)
+        return null;
+    if (typeof window === 'undefined')
+        return null;
+    const Ctor = (window as unknown as {
+        AudioContext?: typeof AudioContext;
+        webkitAudioContext?: typeof AudioContext;
+    })
+        .AudioContext ||
+        (window as unknown as {
+            webkitAudioContext?: typeof AudioContext;
+        }).webkitAudioContext;
+    if (!Ctor)
+        return null;
+    if (!ctx) {
+        try {
+            ctx = new Ctor();
+        }
+        catch {
+            ctx = null;
+        }
     }
-  }
-  return ctx;
+    return ctx;
 }
-
 export function unlockSpinAudio() {
-  if (unlocked) return;
-  const c = getContext();
-  if (!c) return;
-  if (c.state === 'suspended') {
-    c.resume().catch(() => {
-      /* ignore */
-    });
-  }
-  unlocked = true;
+    if (unlocked)
+        return;
+    const c = getContext();
+    if (!c)
+        return;
+    if (c.state === 'suspended') {
+        c.resume().catch(() => {
+        });
+    }
+    unlocked = true;
 }
-
 export function playSpinTick(intensity = 1, pitch = 1) {
-  const c = getContext();
-  if (!c || !unlocked) return;
-  if (c.state === 'suspended') {
-    c.resume().catch(() => {
-      /* ignore */
-    });
-  }
-  const now = c.currentTime;
-  const osc = c.createOscillator();
-  const gain = c.createGain();
-
-  osc.type = 'triangle';
-
-  const baseFreq = 540 * pitch;
-  osc.frequency.setValueAtTime(baseFreq, now);
-  osc.frequency.exponentialRampToValueAtTime(Math.max(120, baseFreq * 0.55), now + 0.06);
-
-  const vol = Math.max(0, Math.min(1, intensity)) * 0.08;
-  gain.gain.setValueAtTime(0, now);
-  gain.gain.linearRampToValueAtTime(vol, now + 0.005);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
-
-  osc.connect(gain);
-  gain.connect(c.destination);
-  osc.start(now);
-  osc.stop(now + 0.1);
-}
-
-/** Play a tiny "land" sound — a soft double-thump on final selection. */
-export function playSpinLand() {
-  const c = getContext();
-  if (!c || !unlocked) return;
-  const now = c.currentTime;
-  const makeBloop = (freq: number, startOffset: number) => {
+    const c = getContext();
+    if (!c || !unlocked)
+        return;
+    if (c.state === 'suspended') {
+        c.resume().catch(() => {
+        });
+    }
+    const now = c.currentTime;
     const osc = c.createOscillator();
     const gain = c.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, now + startOffset);
-    osc.frequency.exponentialRampToValueAtTime(freq * 0.7, now + startOffset + 0.18);
-    gain.gain.setValueAtTime(0, now + startOffset);
-    gain.gain.linearRampToValueAtTime(0.07, now + startOffset + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + startOffset + 0.22);
+    osc.type = 'triangle';
+    const baseFreq = 540 * pitch;
+    osc.frequency.setValueAtTime(baseFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(Math.max(120, baseFreq * 0.55), now + 0.06);
+    const vol = Math.max(0, Math.min(1, intensity)) * 0.08;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(vol, now + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
     osc.connect(gain);
     gain.connect(c.destination);
-    osc.start(now + startOffset);
-    osc.stop(now + startOffset + 0.25);
-  };
-  makeBloop(360, 0);
-  makeBloop(540, 0.08);
+    osc.start(now);
+    osc.stop(now + 0.1);
 }
-
+export function playSpinLand() {
+    const c = getContext();
+    if (!c || !unlocked)
+        return;
+    const now = c.currentTime;
+    const makeBloop = (freq: number, startOffset: number) => {
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + startOffset);
+        osc.frequency.exponentialRampToValueAtTime(freq * 0.7, now + startOffset + 0.18);
+        gain.gain.setValueAtTime(0, now + startOffset);
+        gain.gain.linearRampToValueAtTime(0.07, now + startOffset + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + startOffset + 0.22);
+        osc.connect(gain);
+        gain.connect(c.destination);
+        osc.start(now + startOffset);
+        osc.stop(now + startOffset + 0.25);
+    };
+    makeBloop(360, 0);
+    makeBloop(540, 0.08);
+}
 export function setSpinAudioMuted(value: boolean) {
-  muted = value;
+    muted = value;
 }
-
 export function prefersReducedMotion(): boolean {
-  if (typeof window === 'undefined' || !window.matchMedia) return false;
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (typeof window === 'undefined' || !window.matchMedia)
+        return false;
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }

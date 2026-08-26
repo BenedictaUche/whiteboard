@@ -34,7 +34,6 @@ For corrections: only include genuine technical errors the candidate made. If th
 For interviewerFollowUp: generate ONE realistic follow-up question an actual interviewer would ask next. It must relate to the original topic, match the difficulty level, and ideally target a missing concept, a shallow explanation, or an important trade-off. Include a short reason why this is a useful follow-up.
 
 For nextPractice: give ONE actionable, specific instruction for improving the answer, tied directly to the weaknesses detected. Bad: "Practice more." Good: "Answer again in under two minutes and this time explain cache invalidation with one example strategy for distributed systems."`;
-
 export const FEEDBACK_JSON_SCHEMA_DESCRIPTION = `Return a single JSON object with exactly this shape:
 {
   "overallScore": number 0-100,
@@ -58,62 +57,57 @@ export const FEEDBACK_JSON_SCHEMA_DESCRIPTION = `Return a single JSON object wit
   "interviewerFollowUp": { "question": string, "reason": string },
   "nextPractice": { "instruction": string }
 }`;
-
 export function buildFeedbackUserPrompt(input: {
-  topicTitle: string;
-  difficulty?: string;
-  track: string;
-  mode: string;
-  expectedConcepts?: string[];
-  transcript: string;
-  notes?: string;
+    topicTitle: string;
+    difficulty?: string;
+    track: string;
+    mode: string;
+    expectedConcepts?: string[];
+    transcript: string;
+    notes?: string;
 }): string {
-  const expected = input.expectedConcepts?.length
-    ? input.expectedConcepts.map((c) => `- ${c}`).join('\n')
-    : '(not provided — infer the concepts a strong answer to this exact question should cover, based on your own expertise)';
-
-  return [
-    `Topic asked to the candidate: ${input.topicTitle}`,
-    `Track: ${input.track}`,
-    `Difficulty level: ${input.difficulty ?? 'n/a'}`,
-    `Practice Mode: ${input.mode}`,
-    ``,
-    `Expected concepts a strong answer should cover:`,
-    expected,
-    ``,
-    input.notes?.trim()
-      ? `Candidate's research notes (context only — do NOT credit anything here unless it was also said in the transcript):\n${input.notes.trim()}`
-      : `Research notes: n/a`,
-    ``,
-    `Evaluate ONLY what the candidate actually said in the transcript below.`,
-    `Candidate transcript:`,
-    input.transcript,
-  ].join('\n');
+    const expected = input.expectedConcepts?.length
+        ? input.expectedConcepts.map((c) => `- ${c}`).join('\n')
+        : '(not provided — infer the concepts a strong answer to this exact question should cover, based on your own expertise)';
+    return [
+        `Topic asked to the candidate: ${input.topicTitle}`,
+        `Track: ${input.track}`,
+        `Difficulty level: ${input.difficulty ?? 'n/a'}`,
+        `Practice Mode: ${input.mode}`,
+        ``,
+        `Expected concepts a strong answer should cover:`,
+        expected,
+        ``,
+        input.notes?.trim()
+            ? `Candidate's research notes (context only — do NOT credit anything here unless it was also said in the transcript):\n${input.notes.trim()}`
+            : `Research notes: n/a`,
+        ``,
+        `Evaluate ONLY what the candidate actually said in the transcript below.`,
+        `Candidate transcript:`,
+        input.transcript,
+    ].join('\n');
 }
-
 export const CUSTOM_TOPIC_SYSTEM_PROMPT = `You generate concise technical interview practice topics together with the concepts a strong answer should cover.
 Respond with a single JSON object only — no markdown, no prose.`;
-
 export function buildCustomTopicUserPrompt(input: {
-  track: string;
-  difficulty: string;
+    track: string;
+    difficulty: string;
 }): string {
-  return [
-    `Generate one technical interview topic for practice.`,
-    `Track: ${input.track}`,
-    `Difficulty: ${input.difficulty}`,
-    ``,
-    `Return JSON with exactly:`,
-    `{`,
-    `  "title": string (start with Explain / How does / What is / Design),`,
-    `  "diff": "Beginner" | "Intermediate" | "Hard",`,
-    `  "researchTime": number (minutes, typically 5-15),`,
-    `  "presentationTime": number (minutes, typically 2-5),`,
-    `  "expectedConcepts": [string] (5-8 short phrases covering what a strong verbal answer must explain)`,
-    `}`,
-  ].join('\n');
+    return [
+        `Generate one technical interview topic for practice.`,
+        `Track: ${input.track}`,
+        `Difficulty: ${input.difficulty}`,
+        ``,
+        `Return JSON with exactly:`,
+        `{`,
+        `  "title": string (start with Explain / How does / What is / Design),`,
+        `  "diff": "Beginner" | "Intermediate" | "Hard",`,
+        `  "researchTime": number (minutes, typically 5-15),`,
+        `  "presentationTime": number (minutes, typically 2-5),`,
+        `  "expectedConcepts": [string] (5-8 short phrases covering what a strong verbal answer must explain)`,
+        `}`,
+    ].join('\n');
 }
-
 export const TOPIC_POOL_SYSTEM_PROMPT = `You are a senior staff software engineer who designs realistic interview topic pools.
 You always respond with a single JSON object — no markdown, no prose.
 
@@ -124,32 +118,33 @@ The topics you generate must be:
 - Not trivially generic (e.g. avoid bare "React" or "APIs").
 - A mix of conceptual, practical, architectural, and scenario-based topics.
 - Vary across the breadth of the requested track (libraries, fundamentals, performance, architecture, testing, etc.).
-- Each phrased as a complete interview question the candidate would be asked.`;
-
+- Each phrased as a complete interview question the candidate would be asked.
+- Written the way an experienced technical interviewer writes questions — never generic AI filler.`;
 export function buildTopicPoolUserPrompt(input: {
-  track: string;
-  count: number;
+    track: string;
+    count: number;
 }): string {
-  return [
-    `Generate a pool of ${input.count} interview topics for the "${input.track}" track.`,
-    ``,
-    `Return JSON with exactly this shape:`,
-    `{`,
-    `  "topics": [`,
-    `    {`,
-    `      "title": "...",`,
-    `      "difficulty": "Beginner" | "Intermediate" | "Hard",`,
-    `      "expectedConcepts": ["...", "..."] (5-8 short phrases a strong answer must cover)`,
-    `    }`,
-    `  ]`,
-    `}`,
-    ``,
-    `Rules:`,
-    `- Titles must be complete interview questions or prompts (e.g. "Explain ...", "How would you ...", "Design ...", "Walk me through ...").`,
-    `- Prefer depth over breadth — each topic should be discussable for several minutes.`,
-    `- Avoid duplicates.`,
-    `- Cover a mix of difficulty levels.`,
-    `- Cover the breadth of the track (don't bunch all topics into one sub-area).`,
-    `- expectedConcepts must be concrete sub-topics/mechanisms/trade-offs, not restatements of the title.`,
-  ].join('\n');
+    return [
+        `Generate a pool of ${input.count} interview topics for the "${input.track}" track.`,
+        ``,
+        `Return JSON with exactly this shape:`,
+        `{`,
+        `  "topics": [`,
+        `    {`,
+        `      "title": "...",`,
+        `      "difficulty": "Beginner" | "Intermediate" | "Hard",`,
+        `      "expectedConcepts": ["...", "..."] (5-8 short phrases a strong answer must cover)`,
+        `    }`,
+        `  ]`,
+        `}`,
+        ``,
+        `Rules:`,
+        `- Titles must be complete interview questions or prompts (e.g. "Explain ...", "How would you ...", "Design ...", "Walk me through ...").`,
+        `- Prefer depth over breadth — each topic should be discussable for several minutes out loud.`,
+        `- Avoid duplicates and near-duplicates.`,
+        `- Include a mixture of difficulty levels (roughly 1/3 Beginner, 1/2 Intermediate, 1/6 Hard).`,
+        `- Cover the full breadth of the track — spread topics across fundamentally different sub-areas. Examples of breadth (adapt to the requested track): Frontend → React/frameworks, JavaScript/TypeScript language internals, browser & rendering fundamentals, performance, accessibility, state management, CSS/layout, networking, testing, architecture; System Design → scalability, caching, databases, queues, load balancing, distributed systems, API design, real-time systems, reliability, trade-offs.`,
+        `- Mix question types: some conceptual ("Explain how X works"), some practical ("How would you debug/optimize X"), some architecture ("Design X"), some scenario-based ("A user reports X — walk me through ..."), and some trade-off questions ("Compare X vs Y for ...").`,
+        `- expectedConcepts must be concrete sub-topics/mechanisms/trade-offs, not restatements of the title.`,
+    ].join('\n');
 }
