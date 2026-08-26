@@ -11,6 +11,7 @@ export interface Topic {
   category: Track;
   hint?: string;
   keyPoints?: string[];
+  expectedConcepts?: string[];
   tags?: string[];
   researchTime?: number;
   presentationTime?: number;
@@ -24,16 +25,27 @@ export type AppStep =
   | 'feedback'
   | 'history';
 
-/** Structured JSON returned by the AI mentor (OpenRouter). */
+export type Importance = 'low' | 'medium' | 'high';
+
 export interface AIFeedback {
   overallScore: number; // 0–100
-  technicalAccuracy: number; // 0–10
-  communication: number; // 0–10
-  structure: number; // 0–10
-  confidence: number; // 0–10
-  strengths: string[];
-  missingConcepts: string[];
-  recommendedTopics: string[];
+  scores: {
+    technicalAccuracy: number; // 0–10
+    conceptCoverage: number; // 0–10
+    communication: number; // 0–10
+    structure: number; // 0–10
+    depth: number; // 0–10
+  };
+  summary: string;
+  strengths: { point: string; evidence?: string }[];
+  missingConcepts: {
+    concept: string;
+    importance: Importance;
+    explanation: string;
+  }[];
+  corrections: { misconception: string; correction: string }[];
+  interviewerFollowUp: { question: string; reason: string };
+  nextPractice: { instruction: string };
 }
 
 export interface DrillRecord {

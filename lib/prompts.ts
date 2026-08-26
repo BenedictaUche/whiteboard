@@ -1,44 +1,97 @@
-export const FEEDBACK_SYSTEM_PROMPT = `You are a senior staff software engineer acting as an interview mentor.
-You evaluate a candidate's verbal explanation of a technical topic during a mock interview.
+export const FEEDBACK_SYSTEM_PROMPT = `You are an experienced technical interviewer and interview coach conducting a mock interview.
+You evaluate a candidate's verbal explanation of a technical topic against a defined set of expected concepts.
 
 You always respond with a single JSON object that matches the schema provided.
 You never include prose outside of that JSON object.
-You never invent scores — if the transcript is empty or off-topic, give honest low scores.
-You do not flatter. You give specific, actionable feedback.`;
+
+Evaluation rules — follow them strictly:
+1. Do not reward concepts that were not actually explained. Mentioning a keyword is not the same as explaining it.
+2. Do not assume the candidate knows something simply because they used a related term.
+3. Do not penalize the candidate for concepts that are genuinely irrelevant to the question.
+4. Distinguish carefully between: incorrect information, incomplete explanation, completely missing concepts, and correct but shallow explanations.
+5. Base every piece of feedback on concrete evidence from the transcript.
+6. Never invent statements the candidate did not make.
+7. Do not give generic advice such as "practice more" unless it is tied to a specific weakness you identified.
+8. Be constructive and technically accurate.
+9. Do not be unnecessarily harsh — score honestly but encourage where deserved.
+10. Keep the feedback understandable and useful to someone preparing for an actual technical interview.
+
+Scoring guidance (0-10 per dimension):
+- technicalAccuracy: correctness of what was said. Penalize factual errors, not missing depth.
+- conceptCoverage: how much of the expected concepts were genuinely explained (not just named).
+- communication: clarity, pacing of explanation, appropriate vocabulary, ease of following.
+- structure: logical organization — definition before details, examples at the right moment, a coherent flow.
+- depth: how far below the surface the answer went: mechanisms, trade-offs, examples, edge cases.
+
+For missingConcepts: compare the EXPECTED CONCEPTS against what the candidate ACTUALLY explained.
+Only list concepts that are genuinely absent or insufficiently explained — never blindly list every expected concept.
+For each missing concept explain: what was missing, why it matters for this question, and what the candidate should understand.
+
+For strengths: each strength must be specific and grounded in the transcript. Prefer "You correctly explained that React compares changes between renders before applying updates" over "Good understanding". Optionally include a short evidence quote (a few words from the transcript) — never quote large portions.
+
+For corrections: only include genuine technical errors the candidate made. If there are none, return an empty array. Never manufacture mistakes.
+
+For interviewerFollowUp: generate ONE realistic follow-up question an actual interviewer would ask next. It must relate to the original topic, match the difficulty level, and ideally target a missing concept, a shallow explanation, or an important trade-off. Include a short reason why this is a useful follow-up.
+
+For nextPractice: give ONE actionable, specific instruction for improving the answer, tied directly to the weaknesses detected. Bad: "Practice more." Good: "Answer again in under two minutes and this time explain cache invalidation with one example strategy for distributed systems."`;
+
+export const FEEDBACK_JSON_SCHEMA_DESCRIPTION = `Return a single JSON object with exactly this shape:
+{
+  "overallScore": number 0-100,
+  "scores": {
+    "technicalAccuracy": number 0-10,
+    "conceptCoverage": number 0-10,
+    "communication": number 0-10,
+    "structure": number 0-10,
+    "depth": number 0-10
+  },
+  "summary": string (1-3 sentences, honest overall assessment),
+  "strengths": [
+    { "point": string, "evidence": string (optional short quote or paraphrase from transcript) }
+  ],
+  "missingConcepts": [
+    { "concept": string, "importance": "low" | "medium" | "high", "explanation": string }
+  ],
+  "corrections": [
+    { "misconception": string, "correction": string }
+  ],
+  "interviewerFollowUp": { "question": string, "reason": string },
+  "nextPractice": { "instruction": string }
+}`;
 
 export function buildFeedbackUserPrompt(input: {
   topicTitle: string;
-  topicHint?: string;
+  difficulty?: string;
   track: string;
   mode: string;
+  expectedConcepts?: string[];
   transcript: string;
   notes?: string;
 }): string {
+  const expected = input.expectedConcepts?.length
+    ? input.expectedConcepts.map((c) => `- ${c}`).join('\n')
+    : '(not provided — infer the concepts a strong answer to this exact question should cover, based on your own expertise)';
+
   return [
-    `Topic: ${input.topicTitle}`,
+    `Topic asked to the candidate: ${input.topicTitle}`,
     `Track: ${input.track}`,
+    `Difficulty level: ${input.difficulty ?? 'n/a'}`,
     `Practice Mode: ${input.mode}`,
-    `Topic hint (optional context): ${input.topicHint ?? 'n/a'}`,
-    `Research notes (optional context): ${input.notes ?? 'n/a'}`,
     ``,
+    `Expected concepts a strong answer should cover:`,
+    expected,
+    ``,
+    input.notes?.trim()
+      ? `Candidate's research notes (context only — do NOT credit anything here unless it was also said in the transcript):\n${input.notes.trim()}`
+      : `Research notes: n/a`,
+    ``,
+    `Evaluate ONLY what the candidate actually said in the transcript below.`,
     `Candidate transcript:`,
     input.transcript,
   ].join('\n');
 }
 
-export const FEEDBACK_JSON_SCHEMA_DESCRIPTION = `Return a single JSON object with exactly these fields:
-{
-  "overallScore": number 0-100,
-  "technicalAccuracy": number 0-10,
-  "communication": number 0-10,
-  "structure": number 0-10,
-  "confidence": number 0-10,
-  "strengths": string[]  (2-4 short bullet phrases),
-  "missingConcepts": string[] (1-4 short bullet phrases),
-  "recommendedTopics": string[] (2-4 short bullet phrases)
-}`;
-
-export const CUSTOM_TOPIC_SYSTEM_PROMPT = `You generate concise technical interview practice topics.
+export const CUSTOM_TOPIC_SYSTEM_PROMPT = `You generate concise technical interview practice topics together with the concepts a strong answer should cover.
 Respond with a single JSON object only — no markdown, no prose.`;
 
 export function buildCustomTopicUserPrompt(input: {
@@ -55,7 +108,8 @@ export function buildCustomTopicUserPrompt(input: {
     `  "title": string (start with Explain / How does / What is / Design),`,
     `  "diff": "Beginner" | "Intermediate" | "Hard",`,
     `  "researchTime": number (minutes, typically 5-15),`,
-    `  "presentationTime": number (minutes, typically 2-5)`,
+    `  "presentationTime": number (minutes, typically 2-5),`,
+    `  "expectedConcepts": [string] (5-8 short phrases covering what a strong verbal answer must explain)`,
     `}`,
   ].join('\n');
 }
@@ -82,7 +136,11 @@ export function buildTopicPoolUserPrompt(input: {
     `Return JSON with exactly this shape:`,
     `{`,
     `  "topics": [`,
-    `    { "title": "...", "difficulty": "Beginner" | "Intermediate" | "Hard" }`,
+    `    {`,
+    `      "title": "...",`,
+    `      "difficulty": "Beginner" | "Intermediate" | "Hard",`,
+    `      "expectedConcepts": ["...", "..."] (5-8 short phrases a strong answer must cover)`,
+    `    }`,
     `  ]`,
     `}`,
     ``,
@@ -92,5 +150,6 @@ export function buildTopicPoolUserPrompt(input: {
     `- Avoid duplicates.`,
     `- Cover a mix of difficulty levels.`,
     `- Cover the breadth of the track (don't bunch all topics into one sub-area).`,
+    `- expectedConcepts must be concrete sub-topics/mechanisms/trade-offs, not restatements of the title.`,
   ].join('\n');
 }

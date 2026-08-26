@@ -35,9 +35,12 @@ import { HelpModal } from './components/HelpModal';
 const RECENT_TOPIC_MEMORY = 8;
 
 function isLegacyFeedback(value: unknown): boolean {
-  if (!value || typeof value !== 'object') return false;
+  if (!value || typeof value !== 'object') return true;
   const v = value as Record<string, unknown>;
-  return 'summaryQuote' in v || 'accuracyScore' in v || 'suggestedTopics' in v;
+  // Pre-2026 flat schema or any record without the five-dimension score object
+  // can't be rendered by the current feedback screen.
+  if (!v.scores || typeof v.scores !== 'object') return true;
+  return false;
 }
 
 function loadDrillRecords(): DrillRecord[] {
@@ -197,13 +200,16 @@ export default function App() {
       const newTopic: Topic = {
         id: `custom-${Date.now()}`,
         title: data.title,
-        diff: data.diff,
-        res: `${data.researchTime} min research`,
-        pres: `${data.presentationTime} min presentation`,
+        diff: data.difficulty ?? data.diff ?? 'Intermediate',
+        res: `${data.researchTime ?? 10} min research`,
+        pres: `${data.presentationTime ?? 3} min presentation`,
         category: selectedTrack,
         hint: 'AI generated custom interview prompt.',
-        researchTime: data.researchTime,
-        presentationTime: data.presentationTime,
+        expectedConcepts: Array.isArray(data.expectedConcepts)
+          ? data.expectedConcepts.filter((c: unknown) => typeof c === 'string')
+          : undefined,
+        researchTime: data.researchTime ?? 10,
+        presentationTime: data.presentationTime ?? 3,
       };
       setTopicsBank((prev) => [newTopic, ...prev]);
       setCurrentTopic(newTopic);
@@ -290,22 +296,28 @@ export default function App() {
     }
   };
 
-  const handleSelectSuggestedTopic = (topicTitle: string) => {
-    const custom: Topic = {
-      id: `suggested-${Date.now()}`,
-      title: topicTitle.startsWith('Explain') ? topicTitle : `Explain ${topicTitle}`,
-      diff: 'Intermediate',
-      res: '10 min research',
-      pres: '3 min presentation',
+
+  const handlePracticeFollowUp = (question: string) => {
+    const trimmed = question.trim();
+    if (!trimmed) return;
+    const followUpTopic: Topic = {
+      id: `followup-${Date.now()}`,
+      title: trimmed,
+      diff: currentTopic.diff,
+      res: 'No research needed',
+      pres: currentTopic.pres || '3 min presentation',
       category: selectedTrack,
-      hint: `Deep dive topic suggested by your AI mentor: ${topicTitle}`,
-      researchTime: 10,
-      presentationTime: 3,
+      hint: `Follow-up from your previous answer on "${currentTopic.title}".`,
+      researchTime: 0,
+      presentationTime: currentTopic.presentationTime ?? 3,
     };
-    setTopicsBank((prev) => [custom, ...prev]);
-    setCurrentTopic(custom);
-    rememberTopic(custom.id);
-    transitionTo('selection');
+    setNotes('');
+    setTranscript('');
+    setFeedback(null);
+    setFeedbackError(null);
+    setCurrentTopic(followUpTopic);
+    rememberTopic(followUpTopic.id);
+    transitionTo('presentation');
   };
 
   const handleSelectRecordFromHistory = (record: DrillRecord) => {
@@ -403,7 +415,7 @@ export default function App() {
             topic={currentTopic}
             feedback={feedback}
             onStartNewDrill={() => transitionTo('selection')}
-            onSelectSuggestedTopic={handleSelectSuggestedTopic}
+            onPracticeFollowUp={handlePracticeFollowUp}
           />
         )}
 

@@ -68,6 +68,7 @@ function aiTopicToTopic(t: GeneratedTopic, track: Track, idx: number): Topic {
     pres: `${presentationTimeFor(t.difficulty)} min presentation`,
     category: track,
     hint: 'AI-generated interview topic — explore any angle that helps you explain it well.',
+    expectedConcepts: Array.isArray(t.expectedConcepts) ? t.expectedConcepts : undefined,
     researchTime: researchTimeFor(t.difficulty),
     presentationTime: presentationTimeFor(t.difficulty),
   };
@@ -82,10 +83,10 @@ function cacheKey(track: Track): string {
 }
 
 function persistCache(track: Track, pool: CachedPool) {
-  // Only persist the AI-remaining topics; rebuilt on demand if cleared.
   const slim = pool.aiRemaining.map((t) => ({
     title: t.title,
     diff: t.diff,
+    expectedConcepts: t.expectedConcepts,
   }));
   safeStorageSet(cacheKey(track), JSON.stringify({ topics: slim }));
 }
@@ -121,12 +122,6 @@ function buildFallbackPool(track: Track): CachedPool {
   };
 }
 
-/**
- * Make sure the pool for a given track is ready.
- * - Returns cached pool if it has any topics.
- * - Otherwise tries AI once, then persists.
- * - Falls back to local JSON if AI fails.
- */
 export async function ensureTopicPool(track: Track): Promise<CachedPool> {
   const existing = sessionCache.get(track);
   if (existing && existing.topics.length > 0) return existing;
@@ -149,7 +144,6 @@ export async function ensureTopicPool(track: Track): Promise<CachedPool> {
       return pool;
     } catch (err) {
       if (err instanceof AIUnavailableError) {
-        // Try persisted AI topics first, then local fallback
         const persistedPool: CachedPool = priorRemaining.length
           ? {
               track,
@@ -171,7 +165,6 @@ export async function ensureTopicPool(track: Track): Promise<CachedPool> {
   return inflight;
 }
 
-/** Force the pool for a track to be regenerated from AI on the next access. */
 export function invalidateTopicPool(track: Track) {
   sessionCache.delete(track);
   try {
@@ -181,11 +174,7 @@ export function invalidateTopicPool(track: Track) {
   }
 }
 
-/**
- * Pick a topic from the pool, excluding the current one and recently-used ids.
- * Returns null only if the pool is genuinely empty (which the caller treats as
- * "fall back to local JSON").
- */
+
 export function pickFromPool(
   pool: CachedPool,
   excludeId: string,
@@ -219,24 +208,10 @@ export function pickLocalFallback(
 }
 
 export interface SpinState {
-  /** Whether the spin animation is running. */
   spinning: boolean;
-  /** Topic currently being shown in the card during the spin. */
   displayTopic: Topic | null;
 }
 
-/**
- * Run a polished spin animation: cycle topics, gradually slowing, land on `target`.
- * Designed to be invoked inside a component via `useRef` + animation frame.
- *
- * `cycleTopics` should be a list of topics that don't include the current one
- * (or a superset) — purely used as candidates to flash through.
- * `target` is the final topic to land on.
- * `onTick(displayTopic, progress)` is called on each frame with progress in [0..1].
- * `onDone(finalTopic)` is called once when the animation ends.
- *
- * Honours `prefersReducedMotion` — in that case jumps straight to `target`.
- */
 export function runSpinAnimation(args: {
   cycleTopics: Topic[];
   target: Topic;
@@ -263,7 +238,6 @@ export function runSpinAnimation(args: {
   let raf = 0;
   let start = 0;
   let cancelled = false;
-  // Build a cycling sequence so we never repeat consecutively
   const sequence: Topic[] = [];
   let lastIdx = -1;
   for (let i = 0; i < 28; i++) {
@@ -273,8 +247,6 @@ export function runSpinAnimation(args: {
     sequence.push(cycleTopics[idx]);
     lastIdx = idx;
   }
-  // The final frame of the cycle should be the target so the "land" is
-  // visibly intentional rather than random.
   sequence.push(target);
 
   const tickCount = sequence.length;
@@ -286,8 +258,7 @@ export function runSpinAnimation(args: {
     const elapsed = now - start;
     const linear = Math.min(1, elapsed / duration);
     const eased = easeOut(linear);
-    // Map eased progress onto discrete tick positions — as `eased` approaches 1
-    // we slow down so the final ticks linger.
+
     const position = eased * (tickCount - 1);
     const index = Math.min(tickCount - 1, Math.round(position));
     const current = sequence[index];

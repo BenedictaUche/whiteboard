@@ -13,6 +13,7 @@ export interface Question {
   presentationTime: number;
   hint?: string;
   keyPoints?: string[];
+  expectedConcepts?: string[];
 }
 
 const TRACK_BANKS: Record<Track, readonly Question[]> = {
@@ -34,6 +35,7 @@ export function questionToTopic(question: Question, track: Track): Topic {
     category: track,
     hint: question.hint,
     keyPoints: question.keyPoints,
+    expectedConcepts: question.expectedConcepts ?? question.keyPoints,
     tags: question.tags,
     researchTime: question.researchTime,
     presentationTime: question.presentationTime,
@@ -52,9 +54,6 @@ export function getAllTopics(): Topic[] {
   return TRACKS.flatMap((track) => getTopicsForTrack(track));
 }
 
-/**
- * Pick a random topic for a track, avoiding the current id and recently seen ids.
- */
 export function pickRandomTopic(
   track: Track,
   options: { excludeId?: string; recentIds?: string[] } = {}

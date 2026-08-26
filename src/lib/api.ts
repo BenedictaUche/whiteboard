@@ -46,6 +46,7 @@ export async function requestCustomTopic(data: any) {
 export interface GeneratedTopic {
   title: string;
   difficulty: 'Beginner' | 'Intermediate' | 'Hard';
+  expectedConcepts?: string[];
 }
 
 export interface TopicPoolResponse {

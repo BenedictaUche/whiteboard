@@ -22,13 +22,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Topic is required for feedback.' });
     }
 
+    // Evaluation context: expectedConcepts from AI-generated topics; static
+    // topics fall back to their keyPoints. Never required — the prompt tells
+    // the model to infer strong-answer concepts when none are provided.
+    const rawConcepts = typeof topic === 'object' && topic ? topic : {};
+    const expectedConcepts = Array.isArray(rawConcepts.expectedConcepts)
+      ? (rawConcepts.expectedConcepts.filter((c: unknown) => typeof c === 'string') as string[])
+      : Array.isArray(rawConcepts.keyPoints)
+        ? (rawConcepts.keyPoints.filter((c: unknown) => typeof c === 'string') as string[])
+        : undefined;
+
     const feedback = await generateFeedback({
       topicTitle,
-      topicHint: typeof topic === 'object' ? topic?.hint : '',
+      difficulty: typeof rawConcepts.diff === 'string' ? rawConcepts.diff : undefined,
       track: track || 'Software Engineering',
       mode: mode || 'Deep Research',
+      expectedConcepts,
       transcript,
-      is_custom: typeof topic === 'object' ? topic?.id?.startsWith('custom-') ?? false : false,
       notes: notes || '',
     });
 

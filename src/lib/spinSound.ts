@@ -1,9 +1,3 @@
-/**
- * Lightweight WebAudio "tick" for the topic spin animation.
- * No external audio file — synthesized on the fly so it stays
- * subtle and depends only on the browser's audio context.
- */
-
 let ctx: AudioContext | null = null;
 let unlocked = false;
 let muted = false;
@@ -26,10 +20,6 @@ function getContext(): AudioContext | null {
   return ctx;
 }
 
-/**
- * Must be called inside the user-gesture handler (e.g. the click on Spin)
- * so that audio playback is permitted by autoplay restrictions.
- */
 export function unlockSpinAudio() {
   if (unlocked) return;
   const c = getContext();
@@ -42,12 +32,6 @@ export function unlockSpinAudio() {
   unlocked = true;
 }
 
-/**
- * Play a short, soft "tick".
- * `intensity` is in [0..1] — 1 is full volume at fast spin, fading down as
- * the animation slows. `pitch` lets us nudge the frequency so each tick
- * feels slightly different from the last.
- */
 export function playSpinTick(intensity = 1, pitch = 1) {
   const c = getContext();
   if (!c || !unlocked) return;
@@ -61,7 +45,7 @@ export function playSpinTick(intensity = 1, pitch = 1) {
   const gain = c.createGain();
 
   osc.type = 'triangle';
-  // Soft mid-range click; pitch lets the cadence feel varied
+
   const baseFreq = 540 * pitch;
   osc.frequency.setValueAtTime(baseFreq, now);
   osc.frequency.exponentialRampToValueAtTime(Math.max(120, baseFreq * 0.55), now + 0.06);
