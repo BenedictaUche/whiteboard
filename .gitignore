@@ -6,7 +6,20 @@ coverage/
 *.log
 .env*
 !.env.example
-
 .vercel
-.env*
 docs/
+
+# OS files
+Thumbs.db
+Desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+tmp/
+temp/
