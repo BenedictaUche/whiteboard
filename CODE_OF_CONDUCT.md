@@ -37,22 +37,3 @@ We aim to handle reports fairly and respectfully.
 ## Scope
 
 This Code of Conduct applies to the Whiteboard repository, its issues, pull requests, discussions, and other project spaces maintained by the project.
-
-The repository contains .env.example files with the required variable names but without secret values.
-
-## OpenRouter API Key
-
-Whiteboard uses the OpenRouter API for AI-powered features. The OpenRouter API key must remain server-side and must never be exposed in client-side code.
-
-If you believe an API key has been exposed:
-
-- Revoke or rotate the key immediately.
-- Remove it from the affected environment.
-- Notify the project maintainer.
-- Check whether the key was committed to Git history.
-
-## Responsible Disclosure
-
-Please give the maintainers a reasonable opportunity to investigate and address a vulnerability before publicly disclosing it.
-
-Thank you for helping keep Whiteboard and its contributors safe!
