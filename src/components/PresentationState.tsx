@@ -239,18 +239,18 @@ export const PresentationState: React.FC<PresentationStateProps> = ({ topic, mod
           <span className="font-bold text-[#6B8B67] uppercase tracking-wider block">
             Your Research Notes Reference:
           </span>
-          <p className="line-clamp-2 italic break-words">{notes}</p>
+          <p className="line-clamp-2 italic wrap-break-word">{notes}</p>
         </div>)}
 
       {focusAreas && focusAreas.concepts.length > 0 && (<div className="bg-white/70 border border-[#F2EDE6] p-4 rounded-2xl text-xs text-[#685F58] space-y-1.5">
-          <span className="font-bold text-[#E87333] uppercase tracking-wider block flex items-center gap-1.5">
+          <span className="font-bold text-[#E87333] uppercase tracking-wider block items-center gap-1.5">
             <span className="material-symbols-outlined text-sm">target</span>
             Focus areas from your last attempt:
           </span>
-          <ul className="list-disc list-inside space-y-0.5 break-words">
+          <ul className="list-disc list-inside space-y-0.5 wrap-break-word">
             {focusAreas.concepts.map((concept, idx) => (<li key={idx}>{concept}</li>))}
           </ul>
-          {focusAreas.nextStep && (<p className="italic pt-0.5 break-words">{focusAreas.nextStep}</p>)}
+          {focusAreas.nextStep && (<p className="italic pt-0.5 wrap-break-word">{focusAreas.nextStep}</p>)}
         </div>)}
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 text-xs text-[#7D7068]">
@@ -258,7 +258,7 @@ export const PresentationState: React.FC<PresentationStateProps> = ({ topic, mod
           <span className={`w-2 h-2 rounded-full shrink-0 ${speechStatus === 'listening' && isRecording
             ? 'bg-red-500 animate-ping'
             : 'bg-gray-400'}`}/>
-          <span className="break-words">{statusMessage}</span>
+          <span className="wrap-break-word">{statusMessage}</span>
         </span>
 
       </div>

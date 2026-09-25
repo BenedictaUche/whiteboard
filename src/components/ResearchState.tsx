@@ -10,7 +10,7 @@ export const ResearchState: React.FC<ResearchStateProps> = ({ topic, notes, setN
     const defaultMinutes = topic.researchTime ?? (parseInt(topic.res, 10) || 10);
     const [timeLeft, setTimeLeft] = useState(defaultMinutes * 60);
     const [isRunning, setIsRunning] = useState(true);
-    const [showKeyPoints, setShowKeyPoints] = useState(false);
+    // const [showKeyPoints, setShowKeyPoints] = useState(false);
     useEffect(() => {
         let interval: any = null;
         if (isRunning && timeLeft > 0) {
@@ -35,7 +35,7 @@ export const ResearchState: React.FC<ResearchStateProps> = ({ topic, notes, setN
     return (<section className="fade-in flex flex-col items-center justify-center min-h-137.5 text-center space-y-6 sm:space-y-8 w-full max-w-200 mx-auto px-4">
 
       <div className="space-y-2 w-full">
-        <span className="inline-block text-[11px] sm:text-[12px] font-bold text-[#685F58] uppercase tracking-widest px-3 sm:px-4 py-1 sm:py-1.5  text-[#5C7A56] max-w-full break-words">
+        <span className="inline-block text-[11px] sm:text-[12px] font-bold text-[#685F58] uppercase tracking-widest px-3 sm:px-4 py-1 sm:py-1.5 max-w-full wrap-break-word">
          {topic.title}
         </span>
 
