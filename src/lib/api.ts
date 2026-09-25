@@ -4,9 +4,6 @@ export class AIUnavailableError extends Error {
         this.name = 'AIUnavailableError';
     }
 }
-export function isOpenRouterConfigured(): boolean {
-    return Boolean(process.env.OPENROUTER_API_KEY);
-}
 export async function requestFeedback(data: any) {
     const response = await fetch('/api/feedback', {
         method: 'POST',
