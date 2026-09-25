@@ -33,7 +33,7 @@ interface TopicSelectionStateProps {
 export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({ selectedTrack, setSelectedTrack, selectedMode, setSelectedMode, currentTopic, poolTopics, recentTopicIds, onSpinAgain, onGetStarted, practiceSummary = null, onStartNextChallenge, onGenerateCustomTopic, isGeneratingCustom = false, customTopicError = null, poolLoading = false, poolError = null, onRefreshPool, }) => {
     const [isSpinning, setIsSpinning] = useState(false);
     const [displayTopic, setDisplayTopic] = useState<Topic>(currentTopic);
-    const [quoteIndex] = useState(0);
+    // const [quoteIndex] = useState(0);
     const cancelSpinRef = useRef<(() => void) | null>(null);
     const lastTickTimeRef = useRef(0);
     const lastTickIndexRef = useRef(-1);
@@ -118,7 +118,7 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({ select
             cancelSpinRef.current?.();
         };
     }, []);
-    const currentQuote = MOTIVATIONAL_QUOTES[quoteIndex];
+    // const currentQuote = MOTIVATIONAL_QUOTES[quoteIndex];
     const showResearchBadge = selectedMode === 'Deep Research';
     const shownTopic = isSpinning ? displayTopic : currentTopic;
     return (<section className="fade-in w-full max-w-225 mx-auto">
@@ -194,7 +194,7 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({ select
 
         <div className="flex-1 space-y-3 text-center md:text-left w-full overflow-hidden">
           <div className="relative overflow-hidden min-h-14 flex items-center justify-center md:justify-start">
-            <h2 key={shownTopic.id} className={`font-display text-xl sm:text-2xl md:text-3xl lg:text-[40px] text-[#1A1A24] tracking-tight font-bold break-words transition-all duration-200 ${isSpinning
+            <h2 key={shownTopic.id} className={`font-display text-xl sm:text-2xl md:text-3xl lg:text-[40px] text-[#1A1A24] tracking-tight font-bold wrap-break-word transition-all duration-200 ${isSpinning
             ? 'opacity-90 translate-y-0 blur-[0.5px]'
             : 'opacity-100 translate-y-0 blur-0'}`}>
               {shownTopic.title}
@@ -259,7 +259,7 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({ select
         </button>
       </div>
 
-      {customTopicError && (<p className="mt-4 text-center text-sm text-red-600 px-4 break-words">
+      {customTopicError && (<p className="mt-4 text-center text-sm text-red-600 px-4 wrap-break-word">
           {customTopicError}
         </p>)}
     </section>);
