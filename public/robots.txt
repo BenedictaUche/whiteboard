@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://whiteboard-drill.vercel.app/sitemap.xml
+Sitemap: https://whiteboard-drill.site/sitemap.xml
