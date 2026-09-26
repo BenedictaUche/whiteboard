@@ -87,7 +87,7 @@ function parseJson<T>(raw: string): T {
     throw new AIUnavailableError('Model returned invalid JSON.');
 }
 function repairJsonish(input: string): string | null {
-    let s = input;
+    const s = input;
     if (!/[{\[]/.test(s))
         return null;
     let out = '';
