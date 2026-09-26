@@ -59,6 +59,7 @@ Run:
 
 ```bash
 npm run lint
+npm run typecheck
 npm run build
 Pull Requests
 ```
