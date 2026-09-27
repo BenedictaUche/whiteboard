@@ -1,10 +1,12 @@
 # Whiteboard
 
-Whiteboard is a lightweight interview practice tool for software engineers. It helps developers improve their technical communication by researching engineering topics, presenting their explanations aloud, and receiving AI-powered feedback.
+Whiteboard is a lightweight interview practice tool for software engineers.
 
-The goal is:
+It helps developers improve their technical communication by researching engineering topics, presenting their explanations aloud, and receiving AI-powered feedback.
 
-> Practice, Explain and Improve.
+**Practice. Explain. Improve.**
+
+[Live Demo](https://whiteboard-drill.site) · [Contributing](CONTRIBUTING.md)
 
 ## Features
 
@@ -26,10 +28,18 @@ The goal is:
 
 ## Getting Started
 
+### Prerequisites
+
+- Node.js
+- An OpenRouter API key
+
+### Installation
+
 Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/BenedictaUche/whiteboard.git
+cd whiteboard
 ```
 
 Install dependencies:
@@ -38,15 +48,15 @@ Install dependencies:
 npm install
 ```
 
-Create your own `.env.local` (never commit it - see `.env.example` for the required variables):
+Create your local environment file:
 
 ```bash
 cp .env.example .env.local
 ```
 
-Then fill in your OpenRouter API key in `.env.local`:
+Then add your OpenRouter credentials to `.env.local`:
 
-```env
+```
 OPENROUTER_API_KEY=your_api_key
 OPENROUTER_MODEL=
 ```
@@ -63,7 +73,7 @@ The application will be available at:
 http://localhost:3000
 ```
 
-The local dev server serves the `/api/*` routes through the Vite config, so no extra process is needed. Alternatively, you can run the full Vercel environment locally:
+The local development server serves the `/api/*` routes through the Vite configuration, so no additional process is required. Alternatively, you can run the full Vercel environment locally:
 
 ```bash
 npm run dev:vercel
@@ -71,32 +81,56 @@ npm run dev:vercel
 
 ## Environment Variables
 
-`.env.example` documents all required variables. Copy it to `.env.local` and fill in your own values. Secrets must never be committed.
+`.env.example` documents all required variables. Copy it to `.env.local` and fill in your own values.
 
-- **Server-side only** (used by the `/api/*` routes, never exposed to the browser, no `VITE_` prefix): `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`
-- **Client-exposed** (embedded in the browser bundle, `VITE_` prefix): `VITE_POSTHOG_PROJECT_TOKEN`, `VITE_POSTHOG_HOST`
+### Server-side only
 
-## Deployment (Vercel)
+Used by the `/api/*` routes and never exposed to the browser:
 
-- **Preview deployments** are created automatically for pull requests and feature branches, so contributors can test changes before they reach production.
-- **Production** is deployed from `main` and uses production environment variables.
-- Environment variables are configured in the Vercel dashboard (names only — the same ones listed above). You do **not** need access to production secrets to contribute; local development works entirely with your own `.env.local`.
+- `OPENROUTER_API_KEY`
+- `OPENROUTER_MODEL`
+
+### Client-exposed
+
+These are embedded in the browser bundle:
+
+- `VITE_POSTHOG_PROJECT_TOKEN`
+- `VITE_POSTHOG_HOST`
+
+Never commit `.env.local` or any file containing secrets.
 
 ## How It Works
 
 1. Select a learning track.
-2. Choose either **Quick Pitch** or **Deep Research**.
+2. Choose either Quick Pitch or Deep Research.
 3. Receive a randomly generated interview topic.
-4. Research the topic (Deep Research mode only).
+4. Research the topic in Deep Research mode.
 5. Explain the concept aloud.
 6. Review your transcript.
 7. Receive AI-powered feedback.
 
+## Deployment
+
+Whiteboard is deployed on Vercel.
+
+- Preview deployments are created automatically for pull requests and feature branches.
+- Production is deployed from `main`.
+- Environment variables are configured in the Vercel dashboard.
+- Contributors do not need access to production secrets. Local development works with their own `.env.local`.
+
+## Contributing
+
+Whiteboard is open source and contributions are welcome.
+
+If you'd like to contribute, check out [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
+
+Have an idea for the project or something you'd like to work on? Feel free to open an issue or reach out.
+
 ## Project Status
 
-Whiteboard is currently under active development.
+Whiteboard is actively being developed.
 
-Upcoming improvements include:
+Some areas we're working on include:
 
 - More interview topics
 - Better speech recognition
