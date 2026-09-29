@@ -1,7 +1,108 @@
-import type { Topic, Track } from '../types';
+import type { Topic, Track, DrillRecord } from '../types';
 import { getTopicsForTrack, pickRandomTopic } from '../data/questions';
 import { requestTopicPool, type GeneratedTopic, AIUnavailableError } from './api';
 import { trackEvent } from './analytics';
+
+/** Max previously-practiced titles sent as exclusions per pool request. */
+const EXCLUDE_HISTORY_LIMIT = 15;
+/** Cap on titles from the current unused pool also sent as exclusions. */
+const EXCLUDE_POOL_LIMIT = 15;
+/** Hard cap so the payload stays bounded even if both sources are full. */
+const EXCLUDE_TOTAL_LIMIT = 25;
+
+/** Case-insensitive title key used for exclusion matching. */
+function titleKey(title: string): string {
+    return title.trim().toLowerCase();
+}
+
+/** Bounded memory of AI-topic titles consumed (spun or practiced) this browser. */
+const SEEN_TITLES_LIMIT = 30;
+function seenTitlesKey(track: Track): string {
+    return `Whiteboard_seen_${track}`;
+}
+function loadSeenTitles(track: Track): string[] {
+    try {
+        const raw = safeStorageGet(seenTitlesKey(track));
+        if (!raw)
+            return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed))
+            return [];
+        return parsed.filter((t): t is string => typeof t === 'string' && t.length > 0);
+    }
+    catch {
+        return [];
+    }
+}
+function saveSeenTitles(track: Track, titles: string[]): void {
+    // Insertion order = oldest first; keep only the most recent N.
+    safeStorageSet(seenTitlesKey(track), JSON.stringify(titles.slice(-SEEN_TITLES_LIMIT)));
+}
+/**
+ * Records AI/custom topic titles from the bank that are no longer unused
+ * (i.e. already spun or practiced) so refill can hard-filter them out.
+ * Title-based: topics still sitting in aiRemaining are NOT recorded.
+ */
+export function recordConsumedTitles(track: Track, currentBank: Topic[]): void {
+    const pool = getCachedPool(track);
+    const remainingTitles = new Set((pool?.aiRemaining ?? []).map((t) => titleKey(t.title)));
+    const seen = loadSeenTitles(track);
+    const seenKeys = new Set(seen.map(titleKey));
+    for (const t of currentBank) {
+        if (!t.id.startsWith('ai-') && !t.id.startsWith('custom-'))
+            continue;
+        const key = titleKey(t.title);
+        if (!key || remainingTitles.has(key) || seenKeys.has(key))
+            continue;
+        seenKeys.add(key);
+        seen.push(t.title.trim());
+    }
+    saveSeenTitles(track, seen);
+}
+
+/**
+ * Collects titles to exclude from the next AI generation: recent drill
+ * history for this track plus the titles already sitting unused in the
+ * current pool. Bounded — history is truncated to the most recent entries
+ * and duplicates are dropped so the payload never grows unbounded.
+ */
+export function buildExclusions(track: Track, history: DrillRecord[]): string[] {
+    const out: string[] = [];
+    const seen = new Set<string>();
+    const push = (raw: string | undefined) => {
+        if (!raw)
+            return;
+        const key = titleKey(raw);
+        if (!key || seen.has(key))
+            return;
+        seen.add(key);
+        out.push(raw.trim());
+    };
+    // Unused pool titles first (most important to not regenerate),
+    // then recent practiced history for this track (most recent first).
+    const pool = getCachedPool(track);
+    if (pool) {
+        for (const t of pool.aiRemaining) {
+            push(t.title);
+            if (out.length >= EXCLUDE_POOL_LIMIT)
+                break;
+        }
+    }
+    for (const record of history) {
+        if (record.track !== track)
+            continue;
+        push(record.topic?.title);
+        if (out.length >= EXCLUDE_POOL_LIMIT + EXCLUDE_HISTORY_LIMIT)
+            break;
+    }
+    // Titles consumed earlier (bounded) fill any remaining budget.
+    for (const t of loadSeenTitles(track)) {
+        if (out.length >= EXCLUDE_TOTAL_LIMIT)
+            break;
+        push(t);
+    }
+    return out.slice(0, EXCLUDE_TOTAL_LIMIT);
+}
 export interface CachedPool {
     topics: Topic[];
     aiRemaining: Topic[];
@@ -58,6 +159,7 @@ function aiTopicToTopic(t: GeneratedTopic, track: Track, idx: number): Topic {
         res: `${researchTimeFor(t.difficulty)} min research`,
         pres: `${presentationTimeFor(t.difficulty)} min presentation`,
         category: track,
+        topicCategory: t.category,
         hint: 'AI-generated interview topic — explore any angle that helps you explain it well.',
         expectedConcepts: Array.isArray(t.expectedConcepts) ? t.expectedConcepts : undefined,
         researchTime: researchTimeFor(t.difficulty),
@@ -74,6 +176,7 @@ function persistCache(track: Track, pool: CachedPool) {
     const slim = pool.aiRemaining.map((t) => ({
         title: t.title,
         diff: t.diff,
+        topicCategory: t.topicCategory,
         expectedConcepts: t.expectedConcepts,
     }));
     safeStorageSet(cacheKey(track), JSON.stringify({ topics: slim }));
@@ -84,9 +187,16 @@ function readPersistedAi(track: Track): GeneratedTopic[] {
         return [];
     try {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed?.topics))
-            return parsed.topics as GeneratedTopic[];
-        return [];
+        if (!Array.isArray(parsed?.topics))
+            return [];
+        return parsed.topics.map((t: Record<string, unknown>) => ({
+            title: typeof t.title === 'string' ? t.title : '',
+            difficulty: t.diff as GeneratedTopic['difficulty'],
+            category: typeof t.topicCategory === 'string' ? t.topicCategory : undefined,
+            expectedConcepts: Array.isArray(t.expectedConcepts)
+                ? (t.expectedConcepts.filter((c: unknown) => typeof c === 'string') as string[])
+                : undefined,
+        })).filter((t: GeneratedTopic) => Boolean(t.title) && Boolean(t.difficulty));
     }
     catch {
         return [];
@@ -109,7 +219,9 @@ function buildFallbackPool(track: Track): CachedPool {
         aiRemaining: [],
     };
 }
-export async function ensureTopicPool(track: Track): Promise<CachedPool> {
+export async function ensureTopicPool(track: Track, options: {
+    history?: DrillRecord[];
+} = {}): Promise<CachedPool> {
     const existing = sessionCache.get(track);
     if (existing && existing.topics.length > 0)
         return existing;
@@ -120,7 +232,10 @@ export async function ensureTopicPool(track: Track): Promise<CachedPool> {
         const priorRemaining = readPersistedAi(track).map((g, i) => aiTopicToTopic(g, track, i));
         trackEvent('topic_generation_started', { track });
         try {
-            const response = await requestTopicPool(track, POOL_TARGET);
+            // Ask the generator to avoid what the user has already practiced
+            // and what is still sitting unused in their pool.
+            const excludeTitles = buildExclusions(track, options.history ?? []);
+            const response = await requestTopicPool(track, POOL_TARGET, excludeTitles);
             const pool = buildPoolFromAi(response.topics, track, priorRemaining);
             sessionCache.set(track, pool);
             persistCache(track, pool);
@@ -182,7 +297,9 @@ export function poolNeedsRefill(track: Track): boolean {
         return true;
     return pool.aiRemaining.length < REFILL_THRESHOLD;
 }
-export async function refillPool(track: Track, currentBank: Topic[]): Promise<Topic[]> {
+export async function refillPool(track: Track, currentBank: Topic[], options: {
+    history?: DrillRecord[];
+} = {}): Promise<Topic[]> {
     const alreadyRefilling = refillsInFlight.get(track);
     if (alreadyRefilling)
         return alreadyRefilling;
@@ -192,16 +309,21 @@ export async function refillPool(track: Track, currentBank: Topic[]): Promise<To
             if (pending)
                 await pending.catch(() => undefined);
             invalidateTopicPool(track);
-            const pool = await ensureTopicPool(track);
+            const pool = await ensureTopicPool(track, { history: options.history });
             if (pool.topics.length === 0)
                 return currentBank;
             const existingIds = new Set(currentBank.map((t) => t.id));
             const existingTitles = new Set(currentBank.map((t) => t.title.toLowerCase()));
+            // Hard filter: a topic already consumed in this browser can never
+            // re-enter the bank, even if the model ignored the exclusions.
+            const seenTitles = new Set(loadSeenTitles(track).map(titleKey));
             const merged = [...currentBank];
             for (const t of pool.topics) {
-                if (!existingIds.has(t.id) && !existingTitles.has(t.title.toLowerCase())) {
-                    merged.push(t);
-                }
+                if (existingIds.has(t.id) || existingTitles.has(t.title.toLowerCase()))
+                    continue;
+                if (seenTitles.has(titleKey(t.title)))
+                    continue;
+                merged.push(t);
             }
             return merged;
         }

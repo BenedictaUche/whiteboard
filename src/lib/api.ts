@@ -35,18 +35,24 @@ export async function requestCustomTopic(data: any) {
 export interface GeneratedTopic {
     title: string;
     difficulty: 'Beginner' | 'Intermediate' | 'Hard';
+    /** One of the track's allowed taxonomy categories (validated server-side). */
+    category?: string;
     expectedConcepts?: string[];
 }
 export interface TopicPoolResponse {
     topics: GeneratedTopic[];
 }
-export async function requestTopicPool(track: string, count = 12): Promise<TopicPoolResponse> {
+export async function requestTopicPool(
+    track: string,
+    count = 12,
+    excludeTitles: string[] = [],
+): Promise<TopicPoolResponse> {
     const response = await fetch('/api/topics', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ track, count }),
+        body: JSON.stringify({ track, count, excludeTitles }),
     });
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));

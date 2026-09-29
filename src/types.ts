@@ -8,6 +8,8 @@ export interface Topic {
     res: string;
     pres: string;
     category: Track;
+    /** Structured sub-area from the track taxonomy (AI topics only). */
+    topicCategory?: string;
     hint?: string;
     keyPoints?: string[];
     expectedConcepts?: string[];

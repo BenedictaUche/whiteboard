@@ -118,30 +118,55 @@ The topics you generate must be:
 - Not trivially generic (e.g. avoid bare "React" or "APIs").
 - A mix of conceptual, practical, architectural, and scenario-based topics.
 - Vary across the breadth of the requested track (libraries, fundamentals, performance, architecture, testing, etc.).
+- Each topic is labeled with exactly one of the allowed categories provided in the user message.
 - Each phrased as a complete interview question the candidate would be asked.
 - Written the way an experienced technical interviewer writes questions — never generic AI filler.`;
+
 export function buildTopicPoolUserPrompt(input: {
     track: string;
     count: number;
+    categories?: readonly string[];
+    excludeTitles?: readonly string[];
 }): string {
+    const categoryBlock = input.categories && input.categories.length > 0
+        ? [
+            `Allowed categories for this track (assign exactly one to each topic):`,
+            ...input.categories.map((c) => `- ${c}`),
+            `Spread topics across at least 4 different categories — do not cluster everything in the most obvious one.`,
+            ``,
+        ].join('\n')
+        : '';
+    const exclusionBlock = input.excludeTitles && input.excludeTitles.length > 0
+        ? [
+            `The candidate has ALREADY practiced these topics. Do NOT generate them again,`,
+            `and do NOT generate substantially similar topics or rewordings of them:`,
+            ...input.excludeTitles.map((t) => `- ${t}`),
+            ``,
+        ].join('\n')
+        : '';
     return [
         `Generate a pool of ${input.count} interview topics for the "${input.track}" track.`,
         ``,
+        categoryBlock,
+        exclusionBlock,
         `Return JSON with exactly this shape:`,
         `{`,
         `  "topics": [`,
         `    {`,
         `      "title": "...",`,
         `      "difficulty": "Beginner" | "Intermediate" | "Hard",`,
+        `      "category": string (one of the allowed categories listed above)`,
         `      "expectedConcepts": ["...", "..."] (5-8 short phrases a strong answer must cover)`,
         `    }`,
         `  ]`,
         `}`,
         ``,
         `Rules:`,
+        `- Every topic MUST have a "category" field taken verbatim from the allowed categories listed above — never invent one.`,
         `- Titles must be complete interview questions or prompts (e.g. "Explain ...", "How would you ...", "Design ...", "Walk me through ...").`,
         `- Prefer depth over breadth — each topic should be discussable for several minutes out loud.`,
         `- Avoid duplicates and near-duplicates.`,
+        `- Mix question types: conceptual ("Explain how X works"), practical ("How would you implement/optimize X"), debugging ("A user reports X — walk me through diagnosing it"), comparison ("Compare X vs Y for ..."), architecture ("Design X"), and trade-off ("When would you choose X over Y?").`,
         `- Include a mixture of difficulty levels (roughly 1/3 Beginner, 1/2 Intermediate, 1/6 Hard).`,
         `- Cover the full breadth of the track — spread topics across fundamentally different sub-areas. Examples of breadth (adapt to the requested track): Frontend → React/frameworks, JavaScript/TypeScript language internals, browser & rendering fundamentals, performance, accessibility, state management, CSS/layout, networking, testing, architecture; System Design → scalability, caching, databases, queues, load balancing, distributed systems, API design, real-time systems, reliability, trade-offs.`,
         `- Mix question types: some conceptual ("Explain how X works"), some practical ("How would you debug/optimize X"), some architecture ("Design X"), some scenario-based ("A user reports X — walk me through ..."), and some trade-off questions ("Compare X vs Y for ...").`,

@@ -10,6 +10,8 @@ If you want to work on a significant change, please open an issue first so we ca
 
 For small fixes, you can usually go ahead and open a pull request.
 
+You can contribute by reporting bugs, suggesting improvements, fixing issues, improving existing features, adding new features, writing tests, or improving documentation.
+
 ## Local Development
 
 ### 1. Fork the repository

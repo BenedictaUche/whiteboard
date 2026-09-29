@@ -3,7 +3,7 @@ import { AppStep, Track, Mode, Topic, AIFeedback, DrillRecord, Theme, } from './
 import { getTopicsForTrack, getAllTopics } from './data/questions';
 import { requestFeedback, requestCustomTopic, AIUnavailableError, } from './lib/api';
 import { trackEvent } from './lib/analytics';
-import { ensureTopicPool, invalidateTopicPool, pickFromPool, pickLocalFallback, consumePooledTopic, poolNeedsRefill, refillPool, getCachedPool, } from './lib/topicPool';
+import { ensureTopicPool, invalidateTopicPool, pickFromPool, pickLocalFallback, consumePooledTopic, poolNeedsRefill, refillPool, getCachedPool, recordConsumedTitles, } from './lib/topicPool';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { BackgroundDecorations } from './components/BackgroundDecorations';
@@ -89,7 +89,7 @@ export default function App() {
         let cancelled = false;
         setPoolLoading(true);
         setPoolError(null);
-        ensureTopicPool(selectedTrack)
+        ensureTopicPool(selectedTrack, { history: drillRecords })
             .then((pool) => {
             if (cancelled)
                 return;
@@ -151,7 +151,8 @@ export default function App() {
         consumePooledTopic(selectedTrack, nextTopic.id);
         if (poolNeedsRefill(selectedTrack)) {
             const bankAtSpinTime = topicsBank;
-            refillPool(selectedTrack, bankAtSpinTime).then((merged) => {
+            recordConsumedTitles(selectedTrack, bankAtSpinTime);
+            refillPool(selectedTrack, bankAtSpinTime, { history: drillRecords }).then((merged) => {
                 setTopicsBank((prev) => {
                     const mergedIds = new Set(merged.map((t) => t.id));
                     const additions = prev.filter((t) => !mergedIds.has(t.id));
@@ -165,7 +166,7 @@ export default function App() {
         setPoolLoading(true);
         setPoolError(null);
         try {
-            const pool = await ensureTopicPool(selectedTrack);
+            const pool = await ensureTopicPool(selectedTrack, { history: drillRecords });
             if (pool.topics.length > 0) {
                 const next = pickFromPool(pool, currentTopic.id, recentTopicIdsRef.current)
                     ?? pool.topics[0];
@@ -402,15 +403,63 @@ export default function App() {
       <Header currentStep={currentStep} onNavigate={(step) => transitionTo(step)} theme={theme} onToggleTheme={handleToggleTheme} onOpenHelp={() => setIsHelpOpen(true)} onOpenSettings={() => setIsSettingsOpen(true)}/>
 
       <main className="grow w-full max-w-250 mx-auto px-4 sm:px-6 md:px-8 pt-4 sm:pt-6 md:pt-12 pb-12 sm:pb-16 flex flex-col relative z-10">
-        {currentStep === 'selection' && (<TopicSelectionState selectedTrack={selectedTrack} setSelectedTrack={setSelectedTrack} selectedMode={selectedMode} setSelectedMode={setSelectedMode} currentTopic={currentTopic} poolTopics={topicsBank.filter((t) => t.category === selectedTrack || t.id.startsWith('ai-'))} recentTopicIds={recentTopicIdsRef.current} onSpinAgain={handleSpinAgain} onGetStarted={handleGetStarted} practiceSummary={practiceSummary} onStartNextChallenge={handleStartNextChallenge} onGenerateCustomTopic={handleGenerateCustomTopic} isGeneratingCustom={isGeneratingCustom} customTopicError={customTopicError} poolLoading={poolLoading} poolError={poolError} onRefreshPool={handleRefreshPool}/>)}
+        {currentStep === 'selection' &&
+            (<TopicSelectionState
+                selectedTrack={selectedTrack}
+                setSelectedTrack={setSelectedTrack}
+                selectedMode={selectedMode}
+                setSelectedMode={setSelectedMode}
+                currentTopic={currentTopic}
+                poolTopics={topicsBank.filter((t) => t.category === selectedTrack)}
+                recentTopicIds={recentTopicIdsRef.current}
+                onSpinAgain={handleSpinAgain}
+                onGetStarted={handleGetStarted}
+                practiceSummary={practiceSummary}
+                onStartNextChallenge={handleStartNextChallenge}
+                onGenerateCustomTopic={handleGenerateCustomTopic}
+                isGeneratingCustom={isGeneratingCustom}
+                customTopicError={customTopicError}
+                poolLoading={poolLoading}
+                poolError={poolError}
+                onRefreshPool={handleRefreshPool}/>
+            )}
 
-        {currentStep === 'research' && (<ResearchState topic={currentTopic} notes={notes} setNotes={setNotes} onBeginPresentation={handleBeginPresentation}/>)}
+        {currentStep === 'research' &&
+            (<ResearchState
+                topic={currentTopic}
+                notes={notes}
+                setNotes={setNotes}
+                onBeginPresentation={handleBeginPresentation}/>
+            )}
 
-        {currentStep === 'presentation' && (<PresentationState topic={currentTopic} mode={selectedMode} focusAreas={lastAttemptFocusAreas} notes={notes} transcript={transcript} setTranscript={setTranscript} onFinishPresentation={handleFinishPresentation}/>)}
+        {currentStep === 'presentation' &&
+            (<PresentationState topic={currentTopic}
+                mode={selectedMode}
+                focusAreas={lastAttemptFocusAreas}
+                notes={notes} transcript={transcript}
+                setTranscript={setTranscript}
+                onFinishPresentation={handleFinishPresentation}/>
+            )}
 
-        {currentStep === 'results' && (<ResultsState topic={currentTopic} transcript={transcript} setTranscript={setTranscript} onGetFeedback={handleGetFeedback} isLoadingFeedback={isLoadingFeedback} feedbackError={feedbackError}/>)}
+        {currentStep === 'results' && (
+            <ResultsState
+                topic={currentTopic}
+                transcript={transcript}
+                setTranscript={setTranscript}
+                onGetFeedback={handleGetFeedback}
+                isLoadingFeedback={isLoadingFeedback}
+                feedbackError={feedbackError}
+            />
+        )}
 
-        {currentStep === 'feedback' && feedback && (<FeedbackState topic={currentTopic} feedback={feedback} onStartNewDrill={() => transitionTo('selection')} onPracticeAgain={handlePracticeAgain} onPracticeFollowUp={handlePracticeFollowUp}/>)}
+        {currentStep === 'feedback' && feedback && (
+            <FeedbackState topic={currentTopic}
+                feedback={feedback}
+                onStartNewDrill={() => transitionTo('selection')}
+                onPracticeAgain={handlePracticeAgain}
+                onPracticeFollowUp={handlePracticeFollowUp}
+            />
+        )}
 
         {currentStep === 'history' && (<HistoryView records={drillRecords} onSelectRecord={handleSelectRecordFromHistory} onClearHistory={() => setDrillRecords([])} onStartNewDrill={() => transitionTo('selection')}/>)}
       </main>

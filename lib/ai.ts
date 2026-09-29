@@ -1,4 +1,5 @@
 import { FEEDBACK_SYSTEM_PROMPT, FEEDBACK_JSON_SCHEMA_DESCRIPTION, buildFeedbackUserPrompt, CUSTOM_TOPIC_SYSTEM_PROMPT, buildCustomTopicUserPrompt, TOPIC_POOL_SYSTEM_PROMPT, buildTopicPoolUserPrompt, } from './prompts.js';
+import { categoriesForTrack, normalizeCategory } from './taxonomy.js';
 export class AIUnavailableError extends Error {
     constructor(message: string) {
         super(message);
@@ -131,6 +132,7 @@ export async function generateCustomTopic(input: {
 export interface GeneratedTopic {
     title: string;
     difficulty: 'Beginner' | 'Intermediate' | 'Hard';
+    category?: string;
     expectedConcepts?: string[];
 }
 interface GeneratedSingleTopic extends GeneratedTopic {
@@ -200,7 +202,7 @@ function normalizeGeneratedTopic(raw: unknown): GeneratedSingleTopic {
         presentationTime: normalizeMinutes(src.presentationTime),
     };
 }
-function normalizeTopicPool(raw: unknown): TopicPool {
+function normalizeTopicPool(raw: unknown, track: string, excludeTitles: readonly string[] = []): TopicPool {
     const topicsRaw = raw && typeof raw === 'object' && Array.isArray((raw as TopicPool).topics)
         ? (raw as TopicPool).topics
         : [];
@@ -215,10 +217,14 @@ function normalizeTopicPool(raw: unknown): TopicPool {
         const key = title.toLowerCase();
         if (seen.has(key))
             continue;
+        if (excludeTitles.some((ex) => ex.toLowerCase() === key))
+            continue;
         seen.add(key);
+        const rawCategory = (t as { category?: unknown }).category;
         out.push({
             title,
             difficulty: normalizeDifficulty((t as GeneratedTopic).difficulty),
+            category: normalizeCategory(track, rawCategory) ?? undefined,
             expectedConcepts: normalizeExpectedConcepts((t as GeneratedTopic).expectedConcepts),
         });
         if (out.length >= 16)
@@ -229,9 +235,15 @@ function normalizeTopicPool(raw: unknown): TopicPool {
 export async function generateTopicPool(input: {
     track: string;
     count: number;
+    excludeTitles?: readonly string[];
 }): Promise<TopicPool> {
-    const raw = await callOpenRouterJson(TOPIC_POOL_SYSTEM_PROMPT, buildTopicPoolUserPrompt(input));
-    return normalizeTopicPool(parseJson<unknown>(raw));
+    const raw = await callOpenRouterJson(TOPIC_POOL_SYSTEM_PROMPT, buildTopicPoolUserPrompt({
+        track: input.track,
+        count: input.count,
+        categories: categoriesForTrack(input.track),
+        excludeTitles: input.excludeTitles,
+    }));
+    return normalizeTopicPool(parseJson<unknown>(raw), input.track, input.excludeTitles);
 }
 const IMPORTANCES = ['low', 'medium', 'high'] as const;
 function clampScore(value: unknown, max: number): number | null {
