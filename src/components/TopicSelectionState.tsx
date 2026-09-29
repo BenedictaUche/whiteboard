@@ -48,7 +48,7 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({ select
     const [displayTopic, setDisplayTopic] = useState<Topic>(currentTopic);
     const cancelSpinRef = useRef<(() => void) | null>(null);
     const lastTickTimeRef = useRef(0);
-    const lastTickIndexRef = useRef(-1);
+    const lastTickIndexRef = useRef<string | null>(null);
     const reducedMotionRef = useRef(false);
     useEffect(() => {
         if (typeof window === 'undefined')
@@ -88,7 +88,7 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({ select
         setIsSpinning(true);
         setDisplayTopic(currentTopic);
         lastTickTimeRef.current = 0;
-        lastTickIndexRef.current = -1;
+        lastTickIndexRef.current = null;
         const cyclePool = candidates.filter((t) => t.id !== target.id && t.id !== currentTopic.id);
         const reduced = prefersReducedMotion();
         const duration = reduced ? 0 : 1700;
@@ -138,9 +138,9 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({ select
           Practice Technical Interviews
         </h1>
         <div className="flex justify-center mt-4 sm:mt-6">
-          <svgs fill="none" height="12" viewBox="0 0 40 12" width="40" xmlns="http://www.w3.org/2000/svg">
+          <svg fill="none" height="12" viewBox="0 0 40 12" width="40" xmlns="http://www.w3.org/2000/svg">
             <path d="M1 6C6.5 6 9.5 1 15 1C20.5 1 19.5 11 25 11C30.5 11 34.5 6 40 6" stroke="#82A87D" strokeLinecap="round" strokeWidth="1.5"/>
-          </svgs>
+          </svg>
         </div>
       </div>
 
