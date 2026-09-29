@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { AppStep, Track, Mode, Topic, AIFeedback, DrillRecord, Theme, } from './types';
-import { getTopicsForTrack, getAllTopics } from './data/questions';
-import { requestFeedback, requestCustomTopic, AIUnavailableError, } from './lib/api';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { AppStep, Track, Mode, Topic, AIFeedback, DrillRecord, Theme } from './types';
+import { getTopicsForTrack } from './data/questions';
 import { trackEvent } from './lib/analytics';
-import { ensureTopicPool, invalidateTopicPool, pickFromPool, pickLocalFallback, consumePooledTopic, poolNeedsRefill, refillPool, getCachedPool, recordConsumedTitles, } from './lib/topicPool';
+import { pickLocalFallback, pickFromPool } from './lib/topicPool';
+import { useTopicPool } from './hooks/useTopicPool';
+import { useDrillRecords } from './hooks/useDrillRecords';
+import { useFeedback } from './hooks/useFeedback';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { BackgroundDecorations } from './components/BackgroundDecorations';
@@ -15,265 +17,141 @@ import { FeedbackState } from './components/FeedbackState';
 import { HistoryView } from './components/HistoryView';
 import { SettingsModal } from './components/SettingsModal';
 import { HelpModal } from './components/HelpModal';
+
 const RECENT_TOPIC_MEMORY = 8;
-function isLegacyFeedback(value: unknown): boolean {
-    if (!value || typeof value !== 'object')
-        return true;
-    const v = value as Record<string, unknown>;
-    if (!v.scores || typeof v.scores !== 'object')
-        return true;
-    return false;
-}
-function loadDrillRecords(): DrillRecord[] {
-    try {
-        const saved = localStorage.getItem('Whiteboard_records');
-        if (!saved)
-            return [];
-        const parsed = JSON.parse(saved);
-        if (!Array.isArray(parsed))
-            return [];
-        return parsed.filter((r) => r && r.feedback && !isLegacyFeedback(r.feedback)) as DrillRecord[];
-    }
-    catch {
-        return [];
-    }
-}
+
 export default function App() {
+    // ---- Local UI / interaction state (intentionally React state) ----
     const [currentStep, setCurrentStep] = useState<AppStep>('selection');
     const [selectedTrack, setSelectedTrack] = useState<Track>('Frontend');
     const [selectedMode, setSelectedMode] = useState<Mode>('Deep Research');
-    const allTopics = getAllTopics();
-    const [topicsBank, setTopicsBank] = useState<Topic[]>(allTopics);
-    const [currentTopic, setCurrentTopic] = useState<Topic>(() => getTopicsForTrack('Frontend')[0] ?? allTopics[0]);
+    const [currentTopic, setCurrentTopic] = useState<Topic>(() => getTopicsForTrack('Frontend')[0]);
+    const [notes, setNotes] = useState('');
+    const [transcript, setTranscript] = useState('');
+    const [feedback, setFeedback] = useState<AIFeedback | null>(null);
+    const [theme, setTheme] = useState<Theme>('cream');
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [isHelpOpen, setIsHelpOpen] = useState(false);
     const recentTopicIdsRef = useRef<string[]>([]);
+    const initializedTracksRef = useRef<Set<Track>>(new Set());
+
+    const { records, addRecord, clearRecords } = useDrillRecords();
+    const topicPool = useTopicPool(selectedTrack, records);
+    const feedbackMutation = useFeedback();
+
     const rememberTopic = (id: string) => {
         const next = [id, ...recentTopicIdsRef.current.filter((x) => x !== id)];
         recentTopicIdsRef.current = next.slice(0, RECENT_TOPIC_MEMORY);
     };
-    const [notes, setNotes] = useState('');
-    const [transcript, setTranscript] = useState('');
-    const [feedback, setFeedback] = useState<AIFeedback | null>(null);
-    const [isLoadingFeedback, setIsLoadingFeedback] = useState(false);
-    const [feedbackError, setFeedbackError] = useState<string | null>(null);
-    const [isGeneratingCustom, setIsGeneratingCustom] = useState(false);
-    const [customTopicError, setCustomTopicError] = useState<string | null>(null);
-    const [poolLoading, setPoolLoading] = useState(false);
-    const [poolError, setPoolError] = useState<string | null>(null);
-    const [theme, setTheme] = useState<Theme>('cream');
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const [isHelpOpen, setIsHelpOpen] = useState(false);
-    const [drillRecords, setDrillRecords] = useState<DrillRecord[]>(loadDrillRecords);
-    const practiceSummary = (() => {
-        if (drillRecords.length === 0)
+
+    const transitionTo = useCallback((nextStep: AppStep) => {
+        setCurrentStep(nextStep);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, []);
+
+    const { pool } = topicPool;
+    useEffect(() => {
+        if (!pool || pool.topics.length === 0)
+            return;
+        if (initializedTracksRef.current.has(selectedTrack))
+            return;
+        initializedTracksRef.current.add(selectedTrack);
+        const initial = pickFromPool(pool, currentTopic.id, recentTopicIdsRef.current) ?? pool.topics[0];
+        if (!initial)
+            return;
+        rememberTopic(initial.id);
+        setCurrentTopic(initial);
+    }, [pool, selectedTrack]);
+
+    useEffect(() => {
+        if (!topicPool.error || pool)
+            return;
+        const fallback = pickLocalFallback(selectedTrack);
+        rememberTopic(fallback.id);
+        setCurrentTopic(fallback);
+    }, [topicPool.error, pool, selectedTrack]);
+
+    // ---- Theme ----
+    useEffect(() => {
+        document.documentElement.classList.remove('light', 'dark', 'sage');
+        document.documentElement.classList.add(theme === 'dark' ? 'dark' : theme === 'sage' ? 'sage' : 'light');
+    }, [theme]);
+
+    // ---- Derived ----
+    const practiceSummary = useMemo(() => {
+        if (records.length === 0)
             return null;
         const startOfToday = new Date();
         startOfToday.setHours(0, 0, 0, 0);
-        const sessionsToday = drillRecords.filter((r) => r.timestamp >= startOfToday.getTime()).length;
-        const last = drillRecords[0];
+        const sessionsToday = records.filter((r) => r.timestamp >= startOfToday.getTime()).length;
+        const last = records[0];
         return {
-            totalSessions: drillRecords.length,
+            totalSessions: records.length,
             sessionsToday,
             lastTopicTitle: last.topic.title,
             lastTrack: last.track,
             lastPracticedAt: last.timestamp,
         };
-    })();
-    useEffect(() => {
-        try {
-            localStorage.setItem('Whiteboard_records', JSON.stringify(drillRecords));
-        }
-        catch {
-        }
-    }, [drillRecords]);
-    useEffect(() => {
-        let cancelled = false;
-        setPoolLoading(true);
-        setPoolError(null);
-        ensureTopicPool(selectedTrack, { history: drillRecords })
-            .then((pool) => {
-            if (cancelled)
-                return;
-            if (pool.topics.length === 0) {
-                setPoolError('No topics available for this track right now.');
-                return;
-            }
-            const initial = pickFromPool(pool, currentTopic.id, recentTopicIdsRef.current)
-                ?? pool.topics[0];
-            if (!initial)
-                return;
-            rememberTopic(initial.id);
-            setCurrentTopic(initial);
-            setTopicsBank((prev) => {
-                const existing = new Set(prev.map((t) => t.id));
-                const merged = [...prev];
-                for (const t of pool.topics) {
-                    if (!existing.has(t.id))
-                        merged.push(t);
-                }
-                return merged;
-            });
-        })
-            .catch((e) => {
-            if (cancelled)
-                return;
-            const message = e instanceof AIUnavailableError
-                ? e.message
-                : 'AI topic generation is unavailable right now.';
-            setPoolError(message);
-            const fallback = pickLocalFallback(selectedTrack);
-            rememberTopic(fallback.id);
-            setCurrentTopic(fallback);
-        })
-            .finally(() => {
-            if (!cancelled)
-                setPoolLoading(false);
-        });
-        return () => {
-            cancelled = true;
-        };
-    }, [selectedTrack]);
-    useEffect(() => {
-        document.documentElement.classList.remove('light', 'dark', 'sage');
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-        }
-        else if (theme === 'sage') {
-            document.documentElement.classList.add('sage');
-        }
-        else {
-            document.documentElement.classList.add('light');
-        }
-    }, [theme]);
+    }, [records]);
+
+    const lastAttemptFocusAreas = useMemo(() => {
+        if (!feedback)
+            return null;
+        const rank = { high: 0, medium: 1, low: 2 } as const;
+        const concepts = [...feedback.missingConcepts]
+            .sort((a, b) => rank[a.importance] - rank[b.importance])
+            .slice(0, 3)
+            .map((m) => m.concept);
+        if (concepts.length === 0)
+            return null;
+        return { concepts, nextStep: feedback.nextPractice?.instruction || '' };
+    }, [feedback]);
+
+    // ---- Handlers ----
     const handleSpinAgain = (nextTopic: Topic) => {
         trackEvent('topic_spun', { track: selectedTrack });
         rememberTopic(nextTopic.id);
         setCurrentTopic(nextTopic);
-        consumePooledTopic(selectedTrack, nextTopic.id);
-        if (poolNeedsRefill(selectedTrack)) {
-            const bankAtSpinTime = topicsBank;
-            recordConsumedTitles(selectedTrack, bankAtSpinTime);
-            refillPool(selectedTrack, bankAtSpinTime, { history: drillRecords }).then((merged) => {
-                setTopicsBank((prev) => {
-                    const mergedIds = new Set(merged.map((t) => t.id));
-                    const additions = prev.filter((t) => !mergedIds.has(t.id));
-                    return [...additions, ...merged];
-                });
-            });
-        }
+        topicPool.consume(nextTopic.id, topicPool.topics);
     };
-    const handleRefreshPool = async () => {
-        invalidateTopicPool(selectedTrack);
-        setPoolLoading(true);
-        setPoolError(null);
-        try {
-            const pool = await ensureTopicPool(selectedTrack, { history: drillRecords });
-            if (pool.topics.length > 0) {
-                const next = pickFromPool(pool, currentTopic.id, recentTopicIdsRef.current)
-                    ?? pool.topics[0];
-                if (next) {
-                    rememberTopic(next.id);
-                    setCurrentTopic(next);
-                }
-            }
-        }
-        catch (e) {
-            const message = e instanceof AIUnavailableError
-                ? e.message
-                : 'Could not refresh topic pool.';
-            setPoolError(message);
-        }
-        finally {
-            setPoolLoading(false);
-        }
-    };
-    const handleGenerateCustomTopic = async () => {
-        setIsGeneratingCustom(true);
-        setCustomTopicError(null);
-        try {
-            const data = await requestCustomTopic({
-                track: selectedTrack,
-                difficulty: 'Intermediate',
-            });
-            const newTopic: Topic = {
-                id: `custom-${Date.now()}`,
-                title: data.title,
-                diff: data.difficulty ?? data.diff ?? 'Intermediate',
-                res: `${data.researchTime ?? 10} min research`,
-                pres: `${data.presentationTime ?? 3} min presentation`,
-                category: selectedTrack,
-                hint: 'AI generated custom interview prompt.',
-                expectedConcepts: Array.isArray(data.expectedConcepts)
-                    ? data.expectedConcepts.filter((c: unknown) => typeof c === 'string')
-                    : undefined,
-                researchTime: data.researchTime ?? 10,
-                presentationTime: data.presentationTime ?? 3,
-            };
-            trackEvent('custom_topic_generated', {
-                track: selectedTrack,
-                difficulty: newTopic.diff,
-            });
-            setTopicsBank((prev) => [newTopic, ...prev]);
-            setCurrentTopic(newTopic);
-            rememberTopic(newTopic.id);
-        }
-        catch (e) {
-            const message = e instanceof AIUnavailableError
-                ? e.message
-                : 'AI feedback is currently unavailable.';
-            setCustomTopicError(message);
-        }
-        finally {
-            setIsGeneratingCustom(false);
-        }
-    };
-    const transitionTo = (nextStep: AppStep) => {
-        setCurrentStep(nextStep);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+
     const handleGetStarted = () => {
-        if (selectedMode === 'Quick Pitch') {
-            trackEvent('quick_pitch_started', {
-                track: selectedTrack,
-                difficulty: currentTopic.diff,
-            });
-        }
-        else {
-            trackEvent('deep_research_started', {
-                track: selectedTrack,
-                difficulty: currentTopic.diff,
-            });
-        }
+        trackEvent(selectedMode === 'Quick Pitch' ? 'quick_pitch_started' : 'deep_research_started', {
+            track: selectedTrack,
+            difficulty: currentTopic.diff,
+        });
         setNotes('');
         setTranscript('');
         setFeedback(null);
-        setFeedbackError(null);
-        if (selectedMode === 'Quick Pitch') {
-            transitionTo('presentation');
-        }
-        else {
-            transitionTo('research');
-        }
+        feedbackMutation.reset();
+        transitionTo(selectedMode === 'Quick Pitch' ? 'presentation' : 'research');
     };
-    const handleBeginPresentation = () => {
-        transitionTo('presentation');
-    };
-    const handleFinishPresentation = () => {
-        transitionTo('results');
-    };
-    const handleGetFeedback = async () => {
-        if (!transcript.trim()) {
-            setFeedbackError('Add a transcript before requesting AI feedback.');
+
+    const handleStartNextChallenge = () => {
+        trackEvent('next_challenge_clicked', { track: selectedTrack, mode: selectedMode });
+        const next = topicPool.pickNext(currentTopic.id, recentTopicIdsRef.current);
+        if (!next)
             return;
-        }
+        rememberTopic(next.id);
+        setCurrentTopic(next);
+        topicPool.consume(next.id, topicPool.topics);
+        setNotes('');
+        setTranscript('');
+        setFeedback(null);
+        feedbackMutation.reset();
+        transitionTo(selectedMode === 'Quick Pitch' ? 'presentation' : 'research');
+    };
+
+    const handleGetFeedback = async () => {
+        if (!transcript.trim())
+            return;
         trackEvent('feedback_requested', {
             track: selectedTrack,
             mode: selectedMode,
             difficulty: currentTopic.diff,
         });
-        setIsLoadingFeedback(true);
-        setFeedbackError(null);
         try {
-            const data = await requestFeedback({
+            const data = await feedbackMutation.mutateAsync({
                 topic: currentTopic,
                 track: selectedTrack,
                 mode: selectedMode,
@@ -291,7 +169,7 @@ export default function App() {
                 transcript,
                 feedback: data,
             };
-            setDrillRecords((prev) => [newRecord, ...prev]);
+            addRecord(newRecord);
             trackEvent('feedback_completed', {
                 track: selectedTrack,
                 mode: selectedMode,
@@ -303,56 +181,16 @@ export default function App() {
         catch (err) {
             console.error('Error getting feedback:', err);
             trackEvent('feedback_failed', { track: selectedTrack, mode: selectedMode });
-            const message = err instanceof AIUnavailableError
-                ? err.message
-                : 'AI feedback is currently unavailable.';
-            setFeedbackError(message);
-        }
-        finally {
-            setIsLoadingFeedback(false);
         }
     };
-    const handleStartNextChallenge = () => {
-        trackEvent('next_challenge_clicked', { track: selectedTrack, mode: selectedMode });
-        const pool = getCachedPool(selectedTrack);
-        const next = (pool ? pickFromPool(pool, currentTopic.id, recentTopicIdsRef.current) : null) ??
-            pool?.topics[0] ??
-            pickLocalFallback(selectedTrack, currentTopic.id, recentTopicIdsRef.current);
-        rememberTopic(next.id);
-        setCurrentTopic(next);
-        consumePooledTopic(selectedTrack, next.id);
-        setNotes('');
-        setTranscript('');
-        setFeedback(null);
-        setFeedbackError(null);
-        if (selectedMode === 'Quick Pitch') {
-            transitionTo('presentation');
-        }
-        else {
-            transitionTo('research');
-        }
-    };
+
     const handlePracticeAgain = () => {
         trackEvent('practice_again_clicked', { track: selectedTrack, mode: selectedMode });
         setTranscript('');
-        setFeedbackError(null);
+        feedbackMutation.reset();
         transitionTo('presentation');
     };
-    const lastAttemptFocusAreas = (() => {
-        if (!feedback)
-            return null;
-        const rank = { high: 0, medium: 1, low: 2 } as const;
-        const concepts = [...feedback.missingConcepts]
-            .sort((a, b) => rank[a.importance] - rank[b.importance])
-            .slice(0, 3)
-            .map((m) => m.concept);
-        if (concepts.length === 0)
-            return null;
-        return {
-            concepts,
-            nextStep: feedback.nextPractice?.instruction || '',
-        };
-    })();
+
     const handlePracticeFollowUp = (question: string) => {
         const trimmed = question.trim();
         if (!trimmed)
@@ -371,11 +209,12 @@ export default function App() {
         setNotes('');
         setTranscript('');
         setFeedback(null);
-        setFeedbackError(null);
+        feedbackMutation.reset();
         setCurrentTopic(followUpTopic);
         rememberTopic(followUpTopic.id);
         transitionTo('presentation');
     };
+
     const handleSelectRecordFromHistory = (record: DrillRecord) => {
         setCurrentTopic(record.topic);
         setSelectedTrack(record.track);
@@ -385,14 +224,16 @@ export default function App() {
         setFeedback(record.feedback);
         transitionTo('feedback');
     };
+
     const handleToggleTheme = () => {
-        if (theme === 'cream')
-            setTheme('sage');
-        else if (theme === 'sage')
-            setTheme('dark');
-        else
-            setTheme('cream');
+        setTheme((prev) => (prev === 'cream' ? 'sage' : prev === 'sage' ? 'dark' : 'cream'));
     };
+
+    const handleCustomTopicSelected = (topic: Topic) => {
+        setCurrentTopic(topic);
+        rememberTopic(topic.id);
+    };
+
     return (<div className={`min-h-screen flex flex-col relative z-0 selection:bg-[#E8F3E8] selection:text-[#1A1A24] transition-colors duration-300 ${theme === 'dark'
             ? 'bg-[#18181f] text-gray-100'
             : theme === 'sage'
@@ -400,68 +241,20 @@ export default function App() {
                 : 'bg-[#FDFCF5] text-[#1b1c15]'}`}>
       <BackgroundDecorations />
 
-      <Header currentStep={currentStep} onNavigate={(step) => transitionTo(step)} theme={theme} onToggleTheme={handleToggleTheme} onOpenHelp={() => setIsHelpOpen(true)} onOpenSettings={() => setIsSettingsOpen(true)}/>
+      <Header currentStep={currentStep} onNavigate={transitionTo} theme={theme} onToggleTheme={handleToggleTheme} onOpenHelp={() => setIsHelpOpen(true)} onOpenSettings={() => setIsSettingsOpen(true)}/>
 
       <main className="grow w-full max-w-250 mx-auto px-4 sm:px-6 md:px-8 pt-4 sm:pt-6 md:pt-12 pb-12 sm:pb-16 flex flex-col relative z-10">
-        {currentStep === 'selection' &&
-            (<TopicSelectionState
-                selectedTrack={selectedTrack}
-                setSelectedTrack={setSelectedTrack}
-                selectedMode={selectedMode}
-                setSelectedMode={setSelectedMode}
-                currentTopic={currentTopic}
-                poolTopics={topicsBank.filter((t) => t.category === selectedTrack)}
-                recentTopicIds={recentTopicIdsRef.current}
-                onSpinAgain={handleSpinAgain}
-                onGetStarted={handleGetStarted}
-                practiceSummary={practiceSummary}
-                onStartNextChallenge={handleStartNextChallenge}
-                onGenerateCustomTopic={handleGenerateCustomTopic}
-                isGeneratingCustom={isGeneratingCustom}
-                customTopicError={customTopicError}
-                poolLoading={poolLoading}
-                poolError={poolError}
-                onRefreshPool={handleRefreshPool}/>
-            )}
+        {currentStep === 'selection' && (<TopicSelectionState selectedTrack={selectedTrack} setSelectedTrack={setSelectedTrack} selectedMode={selectedMode} setSelectedMode={setSelectedMode} currentTopic={currentTopic} history={records} recentTopicIds={recentTopicIdsRef.current} onSpinAgain={handleSpinAgain} onGetStarted={handleGetStarted} practiceSummary={practiceSummary} onStartNextChallenge={handleStartNextChallenge} onPoolTopicPicked={handleCustomTopicSelected} onCustomTopicSelected={handleCustomTopicSelected}/>)}
 
-        {currentStep === 'research' &&
-            (<ResearchState
-                topic={currentTopic}
-                notes={notes}
-                setNotes={setNotes}
-                onBeginPresentation={handleBeginPresentation}/>
-            )}
+        {currentStep === 'research' && (<ResearchState topic={currentTopic} notes={notes} setNotes={setNotes} onBeginPresentation={() => transitionTo('presentation')}/>)}
 
-        {currentStep === 'presentation' &&
-            (<PresentationState topic={currentTopic}
-                mode={selectedMode}
-                focusAreas={lastAttemptFocusAreas}
-                notes={notes} transcript={transcript}
-                setTranscript={setTranscript}
-                onFinishPresentation={handleFinishPresentation}/>
-            )}
+        {currentStep === 'presentation' && (<PresentationState topic={currentTopic} mode={selectedMode} focusAreas={lastAttemptFocusAreas} notes={notes} transcript={transcript} setTranscript={setTranscript} onFinishPresentation={() => transitionTo('results')}/>)}
 
-        {currentStep === 'results' && (
-            <ResultsState
-                topic={currentTopic}
-                transcript={transcript}
-                setTranscript={setTranscript}
-                onGetFeedback={handleGetFeedback}
-                isLoadingFeedback={isLoadingFeedback}
-                feedbackError={feedbackError}
-            />
-        )}
+        {currentStep === 'results' && (<ResultsState topic={currentTopic} transcript={transcript} setTranscript={setTranscript} onGetFeedback={handleGetFeedback} isLoadingFeedback={feedbackMutation.isPending} feedbackError={feedbackMutation.error}/>)}
 
-        {currentStep === 'feedback' && feedback && (
-            <FeedbackState topic={currentTopic}
-                feedback={feedback}
-                onStartNewDrill={() => transitionTo('selection')}
-                onPracticeAgain={handlePracticeAgain}
-                onPracticeFollowUp={handlePracticeFollowUp}
-            />
-        )}
+        {currentStep === 'feedback' && feedback && (<FeedbackState topic={currentTopic} feedback={feedback} onStartNewDrill={() => transitionTo('selection')} onPracticeAgain={handlePracticeAgain} onPracticeFollowUp={handlePracticeFollowUp}/>)}
 
-        {currentStep === 'history' && (<HistoryView records={drillRecords} onSelectRecord={handleSelectRecordFromHistory} onClearHistory={() => setDrillRecords([])} onStartNewDrill={() => transitionTo('selection')}/>)}
+        {currentStep === 'history' && (<HistoryView records={records} onSelectRecord={handleSelectRecordFromHistory} onClearHistory={clearRecords} onStartNewDrill={() => transitionTo('selection')}/>)}
       </main>
 
       <Footer onOpenPrivacy={() => setIsHelpOpen(true)} onOpenTerms={() => setIsHelpOpen(true)} onOpenSupport={() => setIsHelpOpen(true)}/>

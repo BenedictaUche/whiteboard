@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Topic, Track, Mode } from '../types';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Topic, Track, Mode, DrillRecord } from '../types';
 import { trackEvent } from '../lib/analytics';
-import { MOTIVATIONAL_QUOTES, TRACKS } from '../data/questions';
 import { pickFromPool, runSpinAnimation, } from '../lib/topicPool';
+import { useTopicPool } from '../hooks/useTopicPool';
+import { useCustomTopic } from '../hooks/useCustomTopic';
 import { unlockSpinAudio, playSpinTick, playSpinLand, prefersReducedMotion, } from '../lib/spinSound';
 export interface PracticeSummary {
     totalSessions: number;
@@ -17,23 +18,34 @@ interface TopicSelectionStateProps {
     selectedMode: Mode;
     setSelectedMode: (mode: Mode) => void;
     currentTopic: Topic;
-    poolTopics: Topic[];
+    history: DrillRecord[];
     recentTopicIds: string[];
     onSpinAgain: (topic: Topic) => void;
     onGetStarted: () => void;
     practiceSummary?: PracticeSummary | null;
     onStartNextChallenge?: () => void;
-    onGenerateCustomTopic?: () => void;
-    isGeneratingCustom?: boolean;
-    customTopicError?: string | null;
-    poolLoading?: boolean;
-    poolError?: string | null;
-    onRefreshPool?: () => void;
+    onPoolTopicPicked?: (topic: Topic) => void;
+    onCustomTopicSelected?: (topic: Topic) => void;
 }
-export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({ selectedTrack, setSelectedTrack, selectedMode, setSelectedMode, currentTopic, poolTopics, recentTopicIds, onSpinAgain, onGetStarted, practiceSummary = null, onStartNextChallenge, onGenerateCustomTopic, isGeneratingCustom = false, customTopicError = null, poolLoading = false, poolError = null, onRefreshPool, }) => {
+export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({ selectedTrack, setSelectedTrack, selectedMode, setSelectedMode, currentTopic, history, onSpinAgain, onGetStarted,    practiceSummary = null,
+    onStartNextChallenge,
+    onPoolTopicPicked,
+    onCustomTopicSelected,
+    recentTopicIds = [],
+}) => {
+    const topicPool = useTopicPool(selectedTrack, history);
+    const { error: customTopicError } = useCustomTopic(onCustomTopicSelected);
+    const poolLoading = topicPool.isLoading;
+    const poolTopics = useMemo(() => topicPool.topics.filter((t) => t.category === selectedTrack), [topicPool.topics, selectedTrack]);
+    const handleRefreshPool = async () => {
+        await topicPool.refresh();
+        const next = topicPool.pickNext(currentTopic.id, recentTopicIds);
+        if (next && onPoolTopicPicked) {
+            onPoolTopicPicked(next);
+        }
+    };
     const [isSpinning, setIsSpinning] = useState(false);
     const [displayTopic, setDisplayTopic] = useState<Topic>(currentTopic);
-    // const [quoteIndex] = useState(0);
     const cancelSpinRef = useRef<(() => void) | null>(null);
     const lastTickTimeRef = useRef(0);
     const lastTickIndexRef = useRef(-1);
@@ -118,7 +130,6 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({ select
             cancelSpinRef.current?.();
         };
     }, []);
-    // const currentQuote = MOTIVATIONAL_QUOTES[quoteIndex];
     const showResearchBadge = selectedMode === 'Deep Research';
     const shownTopic = isSpinning ? displayTopic : currentTopic;
     return (<section className="fade-in w-full max-w-225 mx-auto">
@@ -140,7 +151,7 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({ select
             trackEvent('track_selected', { track });
             setSelectedTrack(track);
         }} className="appearance-none w-full bg-white shadow-sm border border-[#F2EDE6] text-[#1A1A24] font-medium rounded-xl py-3 pl-12 pr-12 cursor-pointer hover:bg-gray-50 transition-colors focus:ring-2 focus:ring-[#F28C56]/20 outline-none text-sm">
-            {TRACKS.map((track) => (<option key={track} value={track}>
+            {(['Frontend', 'Backend', 'System Design', 'DevOps'] as Track[]).map((track) => (<option key={track} value={track}>
                 {track}
               </option>))}
           </select>
@@ -175,8 +186,8 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({ select
             {practiceSummary.totalSessions} practice
             {practiceSummary.totalSessions === 1 ? ' session' : 'sessions'} so far
             {practiceSummary.sessionsToday > 0
-                ? ` · ${practiceSummary.sessionsToday} today`
-                : ''}
+            ? ` · ${practiceSummary.sessionsToday} today`
+            : ''}
             . Ready for your next challenge?
           </div>
           <button onClick={onStartNextChallenge} className="shrink-0 bg-[#82A87D] hover:bg-[#6f9469] text-white font-medium text-sm px-5 py-2.5 rounded-xl transition-colors active:scale-95 cursor-pointer flex items-center gap-2 whitespace-nowrap">
@@ -246,10 +257,10 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({ select
           {isSpinning ? 'Spinning…' : 'Spin Again'}
         </button>
 
-        {onRefreshPool && (<button onClick={onRefreshPool} disabled={poolLoading || isSpinning} title="Generate a fresh AI topic pool" className="w-full sm:w-auto bg-[#E8F3E8] border border-[#C5DEC5] text-[#3B5436] font-medium text-[15px] px-5 py-3 sm:py-3.5 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 active:scale-95 cursor-pointer hover:bg-[#d9ebd9] disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Refresh Topic Pool">
+        <button onClick={() => void handleRefreshPool()} disabled={poolLoading || isSpinning} title="Generate a fresh AI topic pool" className="w-full sm:w-auto bg-[#E8F3E8] border border-[#C5DEC5] text-[#3B5436] font-medium text-[15px] px-5 py-3 sm:py-3.5 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 active:scale-95 cursor-pointer hover:bg-[#d9ebd9] disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Refresh Topic Pool">
             <span className="material-symbols-outlined text-[18px]">refresh</span>
             New Pool
-          </button>)}
+          </button>
 
         <button onClick={onGetStarted} disabled={isSpinning} className="w-full sm:w-auto bg-linear-to-r from-[#F28C56] to-[#EE7738] hover:from-[#E67D45] hover:to-[#E06626] text-white font-medium text-[15px] sm:text-[16px] px-6 py-3 sm:py-3.5 rounded-2xl transition-all duration-200 shadow-[0_8px_20px_rgba(242,140,86,0.3)] flex items-center justify-center gap-2 active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Get Started">
           {selectedMode === 'Quick Pitch' ? 'Start Quick Pitch' : 'Start Deep Research'}

@@ -97,7 +97,6 @@ const POOL_TARGET = 10;
 const FALLBACK_POOL_CAP = 30;
 const sessionCache = new Map<Track, CachedPool>();
 const inflightByTrack = new Map<Track, Promise<CachedPool>>();
-const refillsInFlight = new Map<Track, Promise<Topic[]>>();
 function safeStorageGet(key: string): string | null {
     try {
         return sessionStorage.getItem(key);
@@ -188,7 +187,10 @@ function readPersistedAi(track: Track): GeneratedTopic[] {
     }
 }
 function buildPoolFromAi(ai: GeneratedTopic[], track: Track, priorAiRemaining: Topic[]): CachedPool {
-    const newAiTopics = ai.map((t, idx) => aiTopicToTopic(t, track, idx));
+    const seenTitles = new Set(loadSeenTitles(track).map(titleKey));
+    const newAiTopics = ai
+        .filter((t) => !seenTitles.has(titleKey(t.title)))
+        .map((t, idx) => aiTopicToTopic(t, track, idx));
     const aiRemaining = [...newAiTopics, ...priorAiRemaining];
     const fallback = fallbackTrackTopics(track).slice(0, FALLBACK_POOL_CAP);
     return {
@@ -206,15 +208,20 @@ function buildFallbackPool(track: Track): CachedPool {
 }
 export async function ensureTopicPool(track: Track, options: {
     history?: DrillRecord[];
+    force?: boolean;
 } = {}): Promise<CachedPool> {
-    const existing = sessionCache.get(track);
-    if (existing && existing.topics.length > 0)
-        return existing;
-    const alreadyInflight = inflightByTrack.get(track);
-    if (alreadyInflight)
-        return alreadyInflight;
+    if (!options.force) {
+        const existing = sessionCache.get(track);
+        if (existing && existing.topics.length > 0)
+            return existing;
+        const alreadyInflight = inflightByTrack.get(track);
+        if (alreadyInflight)
+            return alreadyInflight;
+    }
     const generation = (async (): Promise<CachedPool> => {
-        const priorRemaining = readPersistedAi(track).map((g, i) => aiTopicToTopic(g, track, i));
+        const priorRemaining = options.force
+            ? getCachedPool(track)?.aiRemaining ?? []
+            : readPersistedAi(track).map((g, i) => aiTopicToTopic(g, track, i));
         trackEvent('topic_generation_started', { track });
         try {
             // generator should avoid what the user has already practiced
@@ -282,48 +289,11 @@ export function poolNeedsRefill(track: Track): boolean {
         return true;
     return pool.aiRemaining.length < REFILL_THRESHOLD;
 }
-export async function refillPool(track: Track, currentBank: Topic[], options: {
+
+export async function refillPool(track: Track, options: {
     history?: DrillRecord[];
-} = {}): Promise<Topic[]> {
-    const alreadyRefilling = refillsInFlight.get(track);
-    if (alreadyRefilling)
-        return alreadyRefilling;
-    const task = (async (): Promise<Topic[]> => {
-        try {
-            const pending = inflightByTrack.get(track);
-            if (pending)
-                await pending.catch(() => undefined);
-            invalidateTopicPool(track);
-            const pool = await ensureTopicPool(track, { history: options.history });
-            if (pool.topics.length === 0)
-                return currentBank;
-            const existingIds = new Set(currentBank.map((t) => t.id));
-            const existingTitles = new Set(currentBank.map((t) => t.title.toLowerCase()));
-            // a topic already consumed in this browser can never
-            // re-enter the bank, even if the model ignored the exclusions.
-            const seenTitles = new Set(loadSeenTitles(track).map(titleKey));
-            const merged = [...currentBank];
-            for (const t of pool.topics) {
-                if (existingIds.has(t.id) || existingTitles.has(t.title.toLowerCase()))
-                    continue;
-                if (seenTitles.has(titleKey(t.title)))
-                    continue;
-                merged.push(t);
-            }
-            return merged;
-        }
-        catch {
-            return currentBank;
-        }
-    })();
-    refillsInFlight.set(track, task);
-    void task
-        .catch(() => currentBank)
-        .finally(() => {
-        if (refillsInFlight.get(track) === task)
-            refillsInFlight.delete(track);
-    });
-    return task;
+} = {}): Promise<CachedPool> {
+    return ensureTopicPool(track, { ...options, force: true });
 }
 export function pickFromPool(pool: CachedPool, excludeId: string, recentIds: string[]): Topic | null {
     const candidates = pool.topics.filter((t) => t.id !== excludeId && !recentIds.includes(t.id));
