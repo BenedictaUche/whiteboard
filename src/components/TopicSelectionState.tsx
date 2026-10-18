@@ -183,7 +183,7 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({ select
           </span>
           <div className="flex-1 min-w-0 text-sm text-[#7D7068]">
             <span className="font-semibold text-[#1A1A24]">Welcome back.</span>{' '}
-            {practiceSummary.totalSessions} practice
+            {practiceSummary.totalSessions} practice {' '}
             {practiceSummary.totalSessions === 1 ? ' session' : 'sessions'} so far
             {practiceSummary.sessionsToday > 0
             ? ` · ${practiceSummary.sessionsToday} today`
