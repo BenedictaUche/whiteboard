@@ -1,0 +1,28 @@
+name: Other
+description: Docs, chores, questions, or anything that isn't a bug or feature
+title: "[Other]: "
+labels: ["triage"]
+body:
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options:
+        - Documentation
+        - Chore / refactor
+        - Performance
+        - Question
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Describe what you'd like to raise.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
