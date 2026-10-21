@@ -2,7 +2,7 @@ import React from 'react';
 export const BackgroundDecorations: React.FC = () => {
     return (<div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
 
-      <div className="absolute top-32 sm:top-40 left-4 sm:left-12 md:left-32 flex flex-wrap w-15 gap-3 opacity-20">
+      <div className="absolute top-32 sm:top-40 left-4 sm:left-12 md:left-32 flex flex-wrap w-15 gap-3 opacity-12">
         <div className="w-1.5 h-1.5 rounded-full bg-[#6B8B67]"/>
         <div className="w-1.5 h-1.5 rounded-full bg-[#6B8B67]"/>
         <div className="w-1.5 h-1.5 rounded-full bg-[#6B8B67]"/>
@@ -14,11 +14,11 @@ export const BackgroundDecorations: React.FC = () => {
         <div className="w-1.5 h-1.5 rounded-full bg-[#6B8B67]"/>
       </div>
 
-      <svg className="absolute top-28 sm:top-32 right-4 sm:right-12 md:right-32 text-[#F28C56] opacity-30 w-6 h-6 sm:w-8 sm:h-8" fill="currentColor" viewBox="0 0 24 24">
+      <svg className="absolute top-28 sm:top-32 right-4 sm:right-12 md:right-32 text-[#F28C56] opacity-15 w-6 h-6 sm:w-8 sm:h-8" fill="currentColor" viewBox="0 0 24 24">
         <path d="M12 0l2 8 8 2-8 2-2 8-2-8-8-2 8-2z"/>
       </svg>
 
-      <svg className="absolute bottom-32 sm:bottom-40 right-6 sm:right-24 md:right-48 text-[#F28C56] opacity-40 w-8 h-8 sm:w-10 sm:h-10" fill="currentColor" viewBox="0 0 24 24">
+      <svg className="absolute bottom-32 sm:bottom-40 right-6 sm:right-24 md:right-48 text-[#F28C56] opacity-20 w-8 h-8 sm:w-10 sm:h-10" fill="currentColor" viewBox="0 0 24 24">
         <path d="M12 0l1.5 8.5 8.5 1.5-8.5 1.5-1.5 8.5-1.5-8.5-8.5-1.5 8.5-1.5z"/>
       </svg>
 
