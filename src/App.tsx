@@ -21,7 +21,6 @@ import { HelpModal } from './components/HelpModal';
 const RECENT_TOPIC_MEMORY = 8;
 
 export default function App() {
-    // ---- Local UI / interaction state (intentionally React state) ----
     const [currentStep, setCurrentStep] = useState<AppStep>('selection');
     const [selectedTrack, setSelectedTrack] = useState<Track>('Frontend');
     const [selectedMode, setSelectedMode] = useState<Mode>('Deep Research');
@@ -234,11 +233,7 @@ export default function App() {
         rememberTopic(topic.id);
     };
 
-    return (<div className={`min-h-screen flex flex-col relative z-0 selection:bg-[#E8F3E8] selection:text-[#1A1A24] transition-colors duration-300 ${theme === 'dark'
-            ? 'bg-[#18181f] text-gray-100'
-            : theme === 'sage'
-                ? 'bg-[#f4f7f4] text-[#1b1c15]'
-                : 'bg-[#FDFCF5] text-[#1b1c15]'}`}>
+    return (      <div className="min-h-screen flex flex-col relative z-0 selection:bg-accent selection:text-accent-foreground transition-colors duration-300 bg-background text-text">
       <BackgroundDecorations />
 
       <Header currentStep={currentStep} onNavigate={transitionTo} theme={theme} onToggleTheme={handleToggleTheme} onOpenHelp={() => setIsHelpOpen(true)} onOpenSettings={() => setIsSettingsOpen(true)}/>
