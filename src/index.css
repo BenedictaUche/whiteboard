@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+  /* Container / sizing tokens */
   --max-width-100: 25rem;
   --max-width-150: 37.5rem;
   --max-width-175: 43.75rem;
@@ -21,17 +22,109 @@
   --height-12: 3rem;
   --height-14: 3.5rem;
   --height-32: 8rem;
+
+  /* Semantic colors (light/cream default; resolved per theme via CSS vars below) */
+  --color-background: var(--wui-background);
+  --color-surface: var(--wui-surface);
+  --color-surface-muted: var(--wui-surface-muted);
+  --color-text: var(--wui-text);
+  --color-text-muted: var(--wui-text-muted);
+  --color-border: var(--wui-border);
+  --color-primary: var(--wui-primary);
+  --color-primary-foreground: var(--wui-primary-foreground);
+  --color-accent: var(--wui-accent);
+  --color-accent-foreground: var(--wui-accent-foreground);
+  --color-success: var(--wui-success);
+  --color-warning: var(--wui-warning);
+  --color-danger: var(--wui-danger);
+  --color-ring: var(--wui-ring);
+
+  /* Radii */
+  --radius-sm: 0.5rem;
+  --radius: 0.75rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+  --shadow: 0 4px 20px -4px rgb(0 0 0 / 0.05);
+  --shadow-md: 0 6px 24px -6px rgb(0 0 0 / 0.06);
+  --shadow-lg: 0 10px 40px -10px rgb(0 0 0 / 0.08);
+
+  /* Motion durations */
+  --duration-75: 75ms;
+  --duration-100: 100ms;
+  --duration-150: 150ms;
+  --duration-200: 200ms;
+  --duration-300: 300ms;
+  --duration-500: 500ms;
+  --duration-700: 700ms;
+
+  /* Easing */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-spin: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @layer base {
-  :root {
-    --color-surface-cream: #FDFCF5;
-    --color-charcoal: #1A1A24;
-    --color-brand-orange: #F28C56;
-    --color-accent-sage: #E8F3E8;
-    --color-accent-blue: #E1F0F7;
-    --color-surface-container: #efeee3;
-    --color-secondary-container: #d8e3d8;
+  :root,
+  .light {
+    --wui-background: #FDFCF5;
+    --wui-surface: #ffffff;
+    --wui-surface-muted: #F2F0E6;
+    --wui-text: #1A1A24;
+    --wui-text-muted: #685F58;
+    --wui-border: #F2EDE6;
+    --wui-primary: #F28C56;
+    --wui-primary-foreground: #FFFFFF;
+    --wui-accent: #E8F3E8;
+    --wui-accent-foreground: #3B5436;
+    --wui-success: #82A87D;
+    --wui-warning: #C45E20;
+    --wui-danger: #C0392B;
+    --wui-ring: #F28C56;
+    --wui-ring-alpha: 0.2;
+  }
+
+  .dark {
+    --wui-background: #18181f;
+    --wui-surface: #21212c;
+    --wui-surface-muted: #2a2a37;
+    --wui-text: #E7E5E0;
+    --wui-text-muted: #A9A1A1;
+    --wui-border: #3d3d4a;
+    --wui-primary: #F28C56;
+    --wui-primary-foreground: #1A1A12;
+    --wui-accent: #1F331F;
+    --wui-accent-foreground: #82A87D;
+    --wui-success: #82A87D;
+    --wui-warning: #E8A15D;
+    --wui-danger: #F07060;
+    --wui-ring: #F28C56;
+    --wui-ring-alpha: 0.35;
+  }
+
+  .sage {
+    --wui-background: #F4F7F4;
+    --wui-surface: #ffffff;
+    --wui-surface-muted: #E8EFE9;
+    --wui-text: #1B1C15;
+    --wui-text-muted: #5C6B5C;
+    --wui-border: #D8E3D8;
+    --wui-primary: #82A87D;
+    --wui-primary-foreground: #FFFFFF;
+    --wui-accent: #E8F3E8;
+    --wui-accent-foreground: #3B5436;
+    --wui-success: #6B8B67;
+    --wui-warning: #C45E20;
+    --wui-danger: #C0392B;
+    --wui-ring: #82A87D;
+    --wui-ring-alpha: 0.25;
   }
 
   html, body, #root {
@@ -40,8 +133,8 @@
   }
 
   body {
-    background-color: var(--color-surface-cream);
-    color: var(--color-charcoal);
+    background-color: var(--wui-background);
+    color: var(--wui-text);
     font-family: 'Inter', sans-serif;
     -webkit-text-size-adjust: 100%;
   }
@@ -75,13 +168,13 @@ button[aria-disabled="true"]:hover,
 }
 
 .fade-in {
-  animation: fadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: fadeIn var(--duration-700) var(--ease-standard) forwards;
   opacity: 0;
   transform: translateY(10px);
 }
 
 .fade-in-delayed {
-  animation: fadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards;
+  animation: fadeIn var(--duration-700) var(--ease-standard) 0.2s forwards;
   opacity: 0;
   transform: translateY(10px);
 }
@@ -91,7 +184,7 @@ button[aria-disabled="true"]:hover,
 }
 
 .fade-out-up {
-  animation: fadeOutUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: fadeOutUp var(--duration-300) var(--ease-ease-out) forwards;
 }
 
 @keyframes fadeOutUp {
@@ -99,7 +192,7 @@ button[aria-disabled="true"]:hover,
 }
 
 .spin-icon-anim {
-  animation: spinAndScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: spinAndScale var(--duration-700) var(--ease-spin);
 }
 
 @keyframes spinAndScale {
@@ -109,13 +202,14 @@ button[aria-disabled="true"]:hover,
 }
 
 .mic-pulse {
-  animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+  animation: pulse 2s infinite var(--ease-standard);
 }
 
 @keyframes pulse {
   0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.1); opacity: 0.7; }
+  50% { transform: scale(1.1); opacity: 0.75; }
 }
+
 @layer utilities {
   .container-pad {
     padding-left: 1rem;
@@ -125,6 +219,19 @@ button[aria-disabled="true"]:hover,
     .container-pad {
       padding-left: 2rem;
       padding-right: 2rem;
+    }
+  }
+
+  /* Reduced-motion safe overrides */
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in,
+    .fade-in-delayed,
+    .fade-out-up,
+    .spin-icon-anim,
+    .mic-pulse {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
     }
   }
 }
