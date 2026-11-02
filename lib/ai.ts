@@ -1,17 +1,75 @@
 import { FEEDBACK_SYSTEM_PROMPT, FEEDBACK_JSON_SCHEMA_DESCRIPTION, buildFeedbackUserPrompt, CUSTOM_TOPIC_SYSTEM_PROMPT, buildCustomTopicUserPrompt, TOPIC_POOL_SYSTEM_PROMPT, buildTopicPoolUserPrompt, } from './prompts.js';
 import { categoriesForTrack, normalizeCategory } from './taxonomy.js';
 export class AIUnavailableError extends Error {
-    constructor(message: string) {
+    status?: number;
+    code?: string;
+    constructor(message: string, status?: number, code?: string) {
         super(message);
         this.name = 'AIUnavailableError';
+        this.status = status;
+        this.code = code;
     }
 }
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const MODEL = process.env.OPENROUTER_MODEL || 'mistralai/voxtral-small-24b-2507';
-async function callOpenRouterJson(systemPrompt: string, userPrompt: string): Promise<string> {
+
+function extractOpenRouterErrorDetails(errText: string): {
+    message: string;
+    metadata?: unknown;
+    requestedMaxOutputTokens?: unknown;
+    availableTokens?: unknown;
+} {
+    if (!errText) {
+        return { message: '' };
+    }
+    try {
+        const parsed = JSON.parse(errText);
+        const error = parsed?.error ?? parsed;
+        const message = typeof error?.message === 'string' ? error.message : errText;
+        const metadata = error?.metadata;
+        let requestedMaxOutputTokens: unknown;
+        let availableTokens: unknown;
+        if (metadata && typeof metadata === 'object') {
+            const m = metadata as Record<string, unknown>;
+            requestedMaxOutputTokens = m.requested_max_tokens ?? m.requestedMaxTokens ?? m.max_tokens ?? m.completion_tokens;
+            availableTokens = m.available_tokens ?? m.availableTokens ?? m.available_credits ?? m.balance ?? m.affordable_tokens ?? m.max_affordable_tokens;
+        }
+        return {
+            message,
+            metadata,
+            requestedMaxOutputTokens,
+            availableTokens,
+        };
+    }
+    catch {
+        return { message: errText };
+    }
+}
+
+function buildUserFacingAIError(status: number, details: ReturnType<typeof extractOpenRouterErrorDetails>): string {
+    const messageLower = details.message.toLowerCase();
+    if (status === 402 || messageLower.includes('insufficient') || messageLower.includes('credit')) {
+        return 'AI service is out of credits. Please try again later or contact support.';
+    }
+    if (status === 429 || messageLower.includes('rate limit')) {
+        return 'Too many AI requests. Please wait a moment and try again.';
+    }
+    if (status === 503 || status === 502 || status === 504 || messageLower.includes('overloaded') || messageLower.includes('unavailable')) {
+        return 'AI provider is temporarily unavailable. Please try again in a moment.';
+    }
+    if (status === 400) {
+        return 'AI request was rejected. Please adjust your input and try again.';
+    }
+    if (status === 401 || status === 403) {
+        return 'AI service configuration error. Please try again later.';
+    }
+    return 'AI feedback is currently unavailable.';
+}
+
+async function callOpenRouterJson(systemPrompt: string, userPrompt: string, maxTokens?: number): Promise<string> {
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
-        throw new AIUnavailableError('OpenRouter is not configured.');
+        throw new AIUnavailableError('OpenRouter is not configured.', 503);
     }
     const makeBody = (useJsonMode: boolean) => JSON.stringify({
         model: MODEL,
@@ -19,6 +77,7 @@ async function callOpenRouterJson(systemPrompt: string, userPrompt: string): Pro
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userPrompt },
         ],
+        ...(typeof maxTokens === 'number' && Number.isFinite(maxTokens) && maxTokens > 0 ? { max_tokens: Math.floor(maxTokens) } : {}),
         ...(useJsonMode ? { response_format: { type: 'json_object' } } : {}),
     });
     let response = await fetch(OPENROUTER_URL, {
@@ -26,6 +85,7 @@ async function callOpenRouterJson(systemPrompt: string, userPrompt: string): Pro
         headers: {
             Authorization: `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
+            'X-Title': 'Whiteboard',
         },
         body: makeBody(true),
     });
@@ -35,18 +95,28 @@ async function callOpenRouterJson(systemPrompt: string, userPrompt: string): Pro
             headers: {
                 Authorization: `Bearer ${apiKey}`,
                 'Content-Type': 'application/json',
+                'HTTP-Referer': process.env.APP_URL || 'https://whiteboard-drill.site',
+                'X-Title': 'Whiteboard',
             },
             body: makeBody(false),
         });
     }
     if (!response.ok) {
         const errText = await response.text().catch(() => '');
-        throw new AIUnavailableError(`OpenRouter request failed (${response.status}): ${errText.slice(0, 200)}`);
+        const details = extractOpenRouterErrorDetails(errText);
+        console.error('OpenRouter request failed', {
+            status: response.status,
+            model: MODEL,
+            hasMetadata: Boolean(details.metadata),
+            requestedMaxOutputTokens: details.requestedMaxOutputTokens,
+            availableTokens: details.availableTokens,
+        });
+        throw new AIUnavailableError(buildUserFacingAIError(response.status, details), response.status);
     }
     const data = await response.json();
     const content = data?.choices?.[0]?.message?.content;
     if (!content) {
-        throw new AIUnavailableError('OpenRouter returned an empty response.');
+        throw new AIUnavailableError('OpenRouter returned an empty response.', 502);
     }
     return content;
 }
@@ -85,7 +155,7 @@ function parseJson<T>(raw: string): T {
         catch {
         }
     }
-    throw new AIUnavailableError('Model returned invalid JSON.');
+    throw new AIUnavailableError('Model returned invalid JSON.', 502);
 }
 function repairJsonish(input: string): string | null {
     const s = input;
@@ -126,7 +196,7 @@ export async function generateCustomTopic(input: {
     track: string;
     difficulty: string;
 }) {
-    const raw = await callOpenRouterJson(CUSTOM_TOPIC_SYSTEM_PROMPT, buildCustomTopicUserPrompt(input));
+    const raw = await callOpenRouterJson(CUSTOM_TOPIC_SYSTEM_PROMPT, buildCustomTopicUserPrompt(input), 512);
     return normalizeGeneratedTopic(parseJson<unknown>(raw));
 }
 export interface GeneratedTopic {
@@ -191,7 +261,7 @@ function normalizeMinutes(value: unknown): number | undefined {
 function normalizeGeneratedTopic(raw: unknown): GeneratedSingleTopic {
     const title = normalizeTitle(raw && typeof raw === 'object' ? (raw as GeneratedSingleTopic).title : undefined);
     if (!title) {
-        throw new AIUnavailableError('Model returned an unusable topic.');
+        throw new AIUnavailableError('Model returned an unusable topic.', 502);
     }
     const src = (raw ?? {}) as Record<string, unknown>;
     return {
@@ -242,7 +312,7 @@ export async function generateTopicPool(input: {
         count: input.count,
         categories: categoriesForTrack(input.track),
         excludeTitles: input.excludeTitles,
-    }));
+    }), 1536);
     return normalizeTopicPool(parseJson<unknown>(raw), input.track, input.excludeTitles);
 }
 const IMPORTANCES = ['low', 'medium', 'high'] as const;
@@ -369,7 +439,7 @@ export interface NormalizedFeedback {
 }
 export function normalizeFeedback(raw: unknown): NormalizedFeedback {
     if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
-        throw new AIUnavailableError('Model returned an unexpected feedback format.');
+        throw new AIUnavailableError('Model returned an unexpected feedback format.', 502);
     }
     const src = raw as Record<string, unknown>;
     const scoresSrc = src.scores && typeof src.scores === 'object'
@@ -417,6 +487,19 @@ export function normalizeFeedback(raw: unknown): NormalizedFeedback {
         },
     };
 }
+const MAX_FEEDBACK_TRANSCRIPT_CHARS = 12000;
+const MAX_FEEDBACK_NOTES_CHARS = 4000;
+
+function truncateText(input: string, maxChars: number): string {
+    if (typeof input !== 'string') {
+        return '';
+    }
+    if (input.length <= maxChars) {
+        return input;
+    }
+    return `${input.slice(0, maxChars)}\n\n[Content truncated due to length limits.]`;
+}
+
 export async function generateFeedback(input: {
     topicTitle: string;
     difficulty?: string;
@@ -426,6 +509,11 @@ export async function generateFeedback(input: {
     transcript: string;
     notes?: string;
 }): Promise<NormalizedFeedback> {
-    const raw = await callOpenRouterJson(`${FEEDBACK_SYSTEM_PROMPT}\n\n${FEEDBACK_JSON_SCHEMA_DESCRIPTION}`, buildFeedbackUserPrompt(input));
+    const sanitizedInput = {
+        ...input,
+        transcript: truncateText(input.transcript || '', MAX_FEEDBACK_TRANSCRIPT_CHARS),
+        notes: truncateText(input.notes || '', MAX_FEEDBACK_NOTES_CHARS),
+    };
+    const raw = await callOpenRouterJson(`${FEEDBACK_SYSTEM_PROMPT}\n\n${FEEDBACK_JSON_SCHEMA_DESCRIPTION}`, buildFeedbackUserPrompt(sanitizedInput), 1536);
     return normalizeFeedback(parseJson<unknown>(raw));
 }

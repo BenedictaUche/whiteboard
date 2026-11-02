@@ -34,7 +34,7 @@ export const TopicSelectionState: React.FC<TopicSelectionStateProps> = ({ select
     recentTopicIds = [],
 }) => {
     const topicPool = useTopicPool(selectedTrack, history);
-    const { error: customTopicError } = useCustomTopic(onCustomTopicSelected);
+    const { error: customTopicError } = useCustomTopic((topic) => onCustomTopicSelected?.(topic));
     const poolLoading = topicPool.isLoading;
     const poolTopics = useMemo(() => topicPool.topics.filter((t) => t.category === selectedTrack), [topicPool.topics, selectedTrack]);
     const handleRefreshPool = async () => {

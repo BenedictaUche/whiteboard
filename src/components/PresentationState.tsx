@@ -99,7 +99,7 @@ export const PresentationState: React.FC<PresentationStateProps> = ({ topic, mod
     return (<section className="fade-in flex flex-col min-h-137.5 w-full max-w-250 mx-auto space-y-6 sm:space-y-8 px-4">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pb-6 border-b border-[#F2EDE6]">
         <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-          <div className="w-11 h-11 sm:w-12 sm:h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mic-pulse shadow-sm shrink-0">
+          <div className="w-11 h-11 sm:w-12 sm:h-12 bg-surface text-danger rounded-full flex items-center justify-center mic-pulse shadow-sm shrink-0">
             <span className="material-symbols-outlined text-xl sm:text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>
               mic
             </span>
@@ -109,7 +109,7 @@ export const PresentationState: React.FC<PresentationStateProps> = ({ topic, mod
               <span className="text-[11px] sm:text-[12px] font-bold text-[#685F58] uppercase tracking-widest truncate">
                 {topic.title}
               </span>
-              {mode && (<span className="shrink-0 bg-[#E8F3E8] text-[#5C7A56] px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider" title={`Practice mode: ${mode}`}>
+              {mode && (<span className="shrink-0 bg-accent text-accent-foreground px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider" title={`Practice mode: ${mode}`}>
                   {mode}
                 </span>)}
             </div>

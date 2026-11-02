@@ -36,12 +36,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
     catch (err: unknown) {
         console.error('Error generating feedback:', err);
-        const message = err instanceof AIUnavailableError
-            ? err.message
-            : err instanceof Error
-                ? err.message
-                : 'AI feedback is currently unavailable.';
-        const status = err instanceof AIUnavailableError ? 503 : 500;
-        return res.status(status).json({ error: message });
+        if (err instanceof AIUnavailableError) {
+            const status = typeof err.status === 'number' ? err.status : 503;
+            return res.status(status).json({ error: err.message });
+        }
+        const message = err instanceof Error ? err.message : 'AI feedback is currently unavailable.';
+        return res.status(500).json({ error: message });
     }
 }
