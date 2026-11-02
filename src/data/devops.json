@@ -118,5 +118,111 @@
       "Traffic splitting for canary releases",
       "Observability without code changes"
     ]
+  },
+  {
+    "id": "blue-green-deployments",
+    "title": "Explain Blue-Green Deployments",
+    "difficulty": "Hard",
+    "tags": ["deployment", "reliability"],
+    "researchTime": 10,
+    "presentationTime": 3,
+    "hint": "Explain how maintaining two identical production environments reduces deployment risk.",
+    "keyPoints": [
+      "Two identical environments: blue and green",
+      "Traffic switching with DNS or load balancer",
+      "Instant rollback by pointing to previous environment",
+      "Cost consideration: running two environments"
+    ]
+  },
+  {
+    "id": "canary-release-strategies",
+    "title": "Explain Canary Release Strategies",
+    "difficulty": "Hard",
+    "tags": ["deployment", "reliability"],
+    "researchTime": 10,
+    "presentationTime": 3,
+    "hint": "Explain gradually shifting traffic to a new version to reduce risk.",
+    "keyPoints": [
+      "Progressive percentage traffic shifting",
+      "Monitoring and automated rollback criteria",
+      "Canary in Kubernetes vs platform-level",
+      "Comparison with blue-green deployments"
+    ]
+  },
+  {
+    "id": "feature-flags",
+    "title": "Explain Feature Flags / Toggles",
+    "difficulty": "Intermediate",
+    "tags": ["deployment", "experimentation"],
+    "researchTime": 6,
+    "presentationTime": 2,
+    "hint": "Explain how feature flags allow toggling functionality without deployment.",
+    "keyPoints": [
+      "Server-side vs client-side feature flags",
+      "Gradual rollout and AB testing",
+      "Flag formats (boolean, percentage, targeted)",
+      "Technical debt and flag cleanup strategies"
+    ]
+  },
+  {
+    "id": "blue-green-vs-canary",
+    "title": "Blue-Green vs Canary: Deployment Strategy Comparison",
+    "difficulty": "Intermediate",
+    "tags": ["deployment", "comparison"],
+    "researchTime": 5,
+    "presentationTime": 2,
+    "hint": "Explain the trade-offs between blue-green and canary deployment approaches.",
+    "keyPoints": [
+      "Blue-green: full environment switch",
+      "Canary: gradual traffic shift",
+      "Cost comparison: running duplicate environments",
+      "When to use each strategy"
+    ]
+  },
+  {
+    "id": "infrastructure-costs",
+    "title": "Explain Infrastructure Cost Monitoring",
+    "difficulty": "Intermediate",
+    "tags": ["cost", "observability"],
+    "researchTime": 6,
+    "presentationTime": 2,
+    "hint": "Explain how to track and optimize cloud infrastructure spending.",
+    "keyPoints": [
+      "Cloud cost allocation and tagging",
+      "AWS/GCP/Azure cost explorer tools",
+      "Right-sizing instances and resources",
+      "Budget alerts and anomaly detection"
+    ]
+  },
+  {
+    "id": "observability-stack",
+    "title": "Explain Observability Stack (Logs/Metrics/Traces)",
+    "difficulty": "Intermediate",
+    "tags": ["monitoring", "observability"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Explain integrating logs, metrics, and traces for end-to-end visibility.",
+    "keyPoints": [
+      "Correlation IDs across the stack",
+      "OpenTelemetry instrumentation",
+      "Log aggregation (ELK, Loki, Datadog)",
+      "Metric collection (Prometheus, Grafana)",
+      "Trace visualization and debugging"
+    ]
+  },
+  {
+    "id": "blue-green-canary-comparison",
+    "title": "Blue-Green vs Canary: When to Use Which",
+    "difficulty": "Beginner",
+    "tags": ["deployment", "decision"],
+    "researchTime": 4,
+    "presentationTime": 1,
+    "hint": "Explain criteria for choosing between blue-green and canary strategies.",
+    "keyPoints": [
+      "Team size and resources",
+      "Risk tolerance and release frequency",
+      "Application state and data migration",
+      "Rollback speed requirements"
+    ]
   }
 ]

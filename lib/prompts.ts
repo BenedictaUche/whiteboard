@@ -1,3 +1,5 @@
+import { categoriesForTrack, normalizeCategory, QUESTION_STYLES, type QuestionStyle } from './taxonomy.js';
+
 export const FEEDBACK_SYSTEM_PROMPT = `You are an experienced technical interviewer and interview coach conducting a mock interview.
 You evaluate a candidate's verbal explanation of a technical topic against a defined set of expected concepts.
 
@@ -114,13 +116,24 @@ You always respond with a single JSON object — no markdown, no prose.
 The topics you generate must be:
 - Realistic verbal interview prompts that an engineer could discuss for several minutes.
 - Specific enough to require explanation, trade-off analysis, or examples.
-- Not duplicates of each other.
+- Not duplicates or near-duplicates of each other.
 - Not trivially generic (e.g. avoid bare "React" or "APIs").
-- A mix of conceptual, practical, architectural, and scenario-based topics.
-- Vary across the breadth of the requested track (libraries, fundamentals, performance, architecture, testing, etc.).
+- A mix of conceptual, practical, architectural, debugging, and scenario-based topics.
+- Vary across the breadth of the requested track.
 - Each topic is labeled with exactly one of the allowed categories provided in the user message.
+- Each topic is labeled with exactly one question style from the allowed question styles.
 - Each phrased as a complete interview question the candidate would be asked.
-- Written the way an experienced technical interviewer writes questions — never generic AI filler.`;
+- Written the way an experienced technical interviewer writes questions — never generic AI filler.
+
+Distribution rules (follow them strictly):
+- Spread topics across as many different categories as possible. Do NOT cluster everything in the most obvious/popular category for the track.
+- If some categories have been underused, prioritize those categories now.
+- Vary the question style: include explain/conceptual, debugging, scenario-based, comparison/tradeoff, implementation/design, performance, architecture, and practical troubleshooting questions.
+- Vary the underlying concepts — do not keep returning to the same few popular concepts (e.g. for Frontend, do not make everything about React hooks or the virtual DOM).
+- Include a mixture of difficulty levels (roughly 1/3 Beginner, 1/2 Intermediate, 1/6 Hard).
+- Prioritize practical interview scenarios alongside pure conceptual questions.
+
+The candidate has already practiced certain topics. Do NOT generate those again, and do NOT generate paraphrases or rewordings of them.`;
 
 export function buildTopicPoolUserPrompt(input: {
     track: string;
@@ -133,13 +146,20 @@ export function buildTopicPoolUserPrompt(input: {
             `Allowed categories for this track (assign exactly one to each topic):`,
             ...input.categories.map((c) => `- ${c}`),
             `Spread topics across at least 4 different categories — do not cluster everything in the most obvious one.`,
+            `Prioritize categories that have been underused in this track rather than repeating the most popular ones.`,
             ``,
         ].join('\n')
         : '';
+    const styleBlock = [
+        `Allowed question styles (assign exactly one to each topic):`,
+        ...QUESTION_STYLES.map((s) => `- ${s}`),
+        `Vary the styles across the pool — do not make every question an "Explain / Conceptual" question.`,
+        ``,
+    ].join('\n');
     const exclusionBlock = input.excludeTitles && input.excludeTitles.length > 0
         ? [
             `The candidate has ALREADY practiced these topics. Do NOT generate them again,`,
-            `and do NOT generate substantially similar topics or rewordings of them:`,
+            `and do NOT generate paraphrases, rewordings, or substantially similar topics:`,
             ...input.excludeTitles.map((t) => `- ${t}`),
             ``,
         ].join('\n')
@@ -148,6 +168,7 @@ export function buildTopicPoolUserPrompt(input: {
         `Generate a pool of ${input.count} interview topics for the "${input.track}" track.`,
         ``,
         categoryBlock,
+        styleBlock,
         exclusionBlock,
         `Return JSON with exactly this shape:`,
         `{`,
@@ -156,6 +177,7 @@ export function buildTopicPoolUserPrompt(input: {
         `      "title": "...",`,
         `      "difficulty": "Beginner" | "Intermediate" | "Hard",`,
         `      "category": string (one of the allowed categories listed above)`,
+        `      "questionStyle": string (one of the allowed question styles listed above)`,
         `      "expectedConcepts": ["...", "..."] (5-8 short phrases a strong answer must cover)`,
         `    }`,
         `  ]`,
@@ -163,13 +185,13 @@ export function buildTopicPoolUserPrompt(input: {
         ``,
         `Rules:`,
         `- Every topic MUST have a "category" field taken verbatim from the allowed categories listed above — never invent one.`,
+        `- Every topic MUST have a "questionStyle" field taken verbatim from the allowed question styles listed above — never invent one.`,
         `- Titles must be complete interview questions or prompts (e.g. "Explain ...", "How would you ...", "Design ...", "Walk me through ...").`,
         `- Prefer depth over breadth — each topic should be discussable for several minutes out loud.`,
-        `- Avoid duplicates and near-duplicates.`,
-        `- Mix question types: conceptual ("Explain how X works"), practical ("How would you implement/optimize X"), debugging ("A user reports X — walk me through diagnosing it"), comparison ("Compare X vs Y for ..."), architecture ("Design X"), and trade-off ("When would you choose X over Y?").`,
+        `- Avoid duplicates, near-duplicates, and paraphrases of previously practiced topics.`,
+        `- Mix question styles across the pool.`,
         `- Include a mixture of difficulty levels (roughly 1/3 Beginner, 1/2 Intermediate, 1/6 Hard).`,
-        `- Cover the full breadth of the track — spread topics across fundamentally different sub-areas. Examples of breadth (adapt to the requested track): Frontend → React/frameworks, JavaScript/TypeScript language internals, browser & rendering fundamentals, performance, accessibility, state management, CSS/layout, networking, testing, architecture; System Design → scalability, caching, databases, queues, load balancing, distributed systems, API design, real-time systems, reliability, trade-offs.`,
-        `- Mix question types: some conceptual ("Explain how X works"), some practical ("How would you debug/optimize X"), some architecture ("Design X"), some scenario-based ("A user reports X — walk me through ..."), and some trade-off questions ("Compare X vs Y for ...").`,
+        `- Cover the full breadth of the track — spread topics across fundamentally different sub-areas.`,
         `- expectedConcepts must be concrete sub-topics/mechanisms/trade-offs, not restatements of the title.`,
     ].join('\n');
 }

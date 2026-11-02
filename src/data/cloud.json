@@ -118,5 +118,185 @@
       "Distributed traces for request flows",
       "Correlation IDs and tooling"
     ]
+  },
+  {
+    "id": "distributed-transactions",
+    "title": "Explain Distributed Transactions and Sagas",
+    "difficulty": "Hard",
+    "tags": ["distributed", "transactions"],
+    "researchTime": 15,
+    "presentationTime": 4,
+    "hint": "Explain the challenges of maintaining atomicity across distributed services and the saga pattern.",
+    "keyPoints": [
+      "Two-phase commit (2PC) vs saga pattern",
+      "Transaction compensation actions",
+      "Long-running transactions",
+      "Saga orchestrator vs choreography"
+    ]
+  },
+  {
+    "id": "cap-theorem",
+    "title": "Explain CAP Theorem",
+    "difficulty": "Hard",
+    "tags": ["distributed", "theory"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Explain the trade-offs between Consistency, Availability, and Partition tolerance in distributed systems.",
+    "keyPoints": [
+      "CAP: Consistency, Availability, Partition tolerance",
+      "CP systems: sacrifice availability for consistency",
+      "AP systems: sacrifice consistency for availability",
+      "Trade-offs in real-world distributed systems"
+    ]
+  },
+  {
+    "id": "microservices-architecture",
+    "title": "Explain Microservices Architecture",
+    "difficulty": "Intermediate",
+    "tags": ["architecture", "scalability"],
+    "researchTime": 10,
+    "presentationTime": 3,
+    "hint": "Explain breaking a monolith into independently deployable services.",
+    "keyPoints": [
+      "Single responsibility principle for services",
+      "Service discovery and registration",
+      "Circuit breakers and bulkheads",
+      "Operational overhead vs monolith simplicity"
+    ]
+  },
+  {
+    "id": "api-gateway",
+    "title": "Explain API Gateway Pattern",
+    "difficulty": "Intermediate",
+    "tags": ["architecture", "api"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Explain how an API gateway routes requests, handles auth, and implements cross-cutting concerns.",
+    "keyPoints": [
+      "Request routing and composition",
+      "Authentication and rate limiting",
+      "Protocol translation (gRPC/REST)",
+      "Edge cache and response transformation"
+    ]
+  },
+  {
+    "id": "service-registration",
+    "title": "Explain Service Discovery and Registration",
+    "difficulty": "Hard",
+    "tags": ["distributed", "architecture"],
+    "researchTime": 10,
+    "presentationTime": 3,
+    "hint": "Explain how services find each other in dynamic environments.",
+    "keyPoints": [
+      "Client-side vs server-side discovery",
+      "Consul, etcd, and AWS Service Discovery",
+      "Dynamic registration and health checking",
+      "DNS-based discovery limitations"
+    ]
+  },
+  {
+    "id": "rate-limiting-distributed",
+    "title": "Explain Distributed Rate Limiting",
+    "difficulty": "Hard",
+    "tags": ["scalability", "security"],
+    "researchTime": 10,
+    "presentationTime": 3,
+    "hint": "Explain token bucket and leaky bucket in distributed systems with shared state.",
+    "keyPoints": [
+      "Distributed token bucket with Redis",
+      "Leaky bucket with atomic operations",
+      "Consistent hashing for load distribution",
+      "Envoy and NGINX rate limiting"
+    ]
+  },
+  {
+    "id": "data-partitioning",
+    "title": "Explain Data Partitioning and Sharding",
+    "difficulty": "Hard",
+    "tags": ["databases", "scalability"],
+    "researchTime": 12,
+    "presentationTime": 4,
+    "hint": "Explain horizontal scaling through data partitioning strategies.",
+    "keyPoints": [
+      "Sharding keys and shard selection",
+      "Range-based vs hash-based sharding",
+      "Cross-shard transactions and limitations",
+      "Rebalancing and re-sharding strategies"
+    ]
+  },
+  {
+    "id": "load-shedding",
+    "title": "Explain Load Shedding and Graceful Degradation",
+    "difficulty": "Hard",
+    "tags": ["reliability", "scalability"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Explain strategies for dropping non-essential load under extreme pressure.",
+    "keyPoints": [
+      "Request prioritization and dropping",
+      "Circuit breaking and fallback responses",
+      "Autoscaling thresholds",
+      "Cascading failure prevention"
+    ]
+  },
+  {
+    "id": "throttling-vs-rate-limiting",
+    "title": "Explain Request Throttling vs Rate Limiting",
+    "difficulty": "Intermediate",
+    "tags": ["scalability", "security"],
+    "researchTime": 6,
+    "presentationTime": 2,
+    "hint": "Explain the distinction between controlling request rate and rejecting excess traffic.",
+    "keyPoints": [
+      "Throttling: smooth request pacing",
+      "Rate limiting: hard rejection at threshold",
+      "Token bucket vs fixed window counter",
+      "Combining throttling and rate limiting"
+    ]
+  },
+  {
+    "id": "redis-clustering",
+    "title": "Explain Redis Clustering and High Availability",
+    "difficulty": "Hard",
+    "tags": ["caching", "availability"],
+    "researchTime": 12,
+    "presentationTime": 4,
+    "hint": "Explain how Redis Cluster provides partitioned data and failover.",
+    "keyPoints": [
+      "Cluster mode vs standalone Redis",
+      "Hash slots and node assignment",
+      "Failover and replica promotion",
+      "Limitations: max 1000 nodes per cluster"
+    ]
+  },
+  {
+    "id": "circuit-breaker",
+    "title": "Explain Circuit Breaker Pattern",
+    "difficulty": "Intermediate",
+    "tags": ["reliability", "patterns"],
+    "researchTime": 6,
+    "presentationTime": 2,
+    "hint": "Explain how circuit breakers prevent cascading failures in distributed systems.",
+    "keyPoints": [
+      "Closed, open, and half-open states",
+      "Failure thresholds and timeout configurations",
+      "Automatic recovery to half-open",
+      "Hystrix vs Polaris vs custom implementations"
+    ]
+  },
+  {
+    "id": "cap-examples",
+    "title": "Examine CAP Theorem Trade-offs in Practice",
+    "difficulty": "Hard",
+    "tags": ["distributed", "theory"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Examine real-world systems that choose different CAP trade-offs.",
+    "keyPoints": [
+      "Cassandra AP, HBase CP",
+      "Spanner attempts CP with TrueTime",
+      "DynamoDB AP with strong consistency options",
+      "When each trade-off makes sense"
+    ]
   }
 ]

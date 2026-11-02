@@ -118,5 +118,260 @@
       "Code splitting strategies (route, dynamic import)",
       "HMR and dev-server architecture"
     ]
+  },
+  {
+    "id": "react-server-components",
+    "title": "Explain React Server Components",
+    "difficulty": "Hard",
+    "tags": ["react", "server-components", "data-fetching"],
+    "researchTime": 15,
+    "presentationTime": 4,
+    "hint": "Cover how Server Components differ from Client Components, data fetching at the edge, and streaming UI.",
+    "keyPoints": [
+      "Server Components render to HTML on the server",
+      "Client Components maintain interactivity",
+      "Data fetching in Server Components with no hydration",
+      "Streaming and selective hydration"
+    ]
+  },
+  {
+    "id": "css-grid-fundamentals",
+    "title": "Explain CSS Grid Fundamentals",
+    "difficulty": "Beginner",
+    "tags": ["css", "layout"],
+    "researchTime": 5,
+    "presentationTime": 2,
+    "hint": "Explain the CSS Grid specification, explicit vs implicit grid, and auto-placement.",
+    "keyPoints": [
+      "grid-template-columns and grid-template-rows",
+      "grid-area, grid-row, grid-column properties",
+      "auto-fit vs auto-fill",
+      "Named grid lines and line-based positioning"
+    ]
+  },
+  {
+    "id": "js-promises",
+    "title": "Explain JavaScript Promises",
+    "difficulty": "Beginner",
+    "tags": ["javascript", "async"],
+    "researchTime": 5,
+    "presentationTime": 2,
+    "hint": "Explain the Promise states (pending, resolved, rejected), chaining with .then/.catch, and async/await sugar.",
+    "keyPoints": [
+      "Promise lifecycle: pending → fulfilled/rejected",
+      "$.then(), .catch() and $.catch() chaining",
+      "async/await as syntactic sugar over Promises",
+      "Promise.all vs Promise.race"
+    ]
+  },
+  {
+    "id": "react-memo",
+    "title": "When should you use React.memo?",
+    "difficulty": "Intermediate",
+    "tags": ["react", "performance"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Explain memoization, when it prevents re-renders, and the performance trade-offs.",
+    "keyPoints": [
+      "PureComponent vs React.memo",
+      "Comparing props with Object.is",
+      "When memo actually improves performance",
+      "Memoization overhead and when to avoid it"
+    ]
+  },
+  {
+    "id": "css-variables",
+    "title": "Explain CSS Custom Properties (Variables)",
+    "difficulty": "Beginner",
+    "tags": ["css", "theming"],
+    "researchTime": 4,
+    "presentationTime": 2,
+    "hint": "Explain how CSS variables (--custom-prop) work, cascading, and fallback values.",
+    "keyPoints": [
+      "Defining and using var(--name) or var(----name)",
+      "Inheritance and scope of CSS variables",
+      "Fallback values: var(--name, default)",
+      "Dynamic theming with variables"
+    ]
+  },
+  {
+    "id": "react-context",
+    "title": "Explain React Context API",
+    "difficulty": "Intermediate",
+    "tags": ["react", "state-management"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Explain how Context solves prop-drilling, creating a Context, and.Provider / .Consumer usage.",
+    "keyPoints": [
+      "Creating a Context with createContext()",
+      "<Context.Provider> passing data down",
+      "Avoiding unnecessary re-renders",
+      "useContext() hook vs Context.Consumer"
+    ]
+  },
+  {
+    "id": "js-async-await",
+    "title": "Explain async/await in JavaScript",
+    "difficulty": "Beginner",
+    "tags": ["javascript", "async"],
+    "researchTime": 5,
+    "presentationTime": 2,
+    "hint": "Explain how async/await simplifies Promise consumption and error handling.",
+    "keyPoints": [
+      "The async keyword returns a Promise",
+      "The await keyword pauses execution until resolve",
+      "try/catch with async/await vs .catch()",
+      "Top-level await (ES modules)"
+    ]
+  },
+  {
+    "id": "react-error-boundaries",
+    "title": "Explain React Error Boundaries",
+    "difficulty": "Intermediate",
+    "tags": ["react", "error-handling"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Explain catching JavaScript errors in child component trees, rendering fallback UIs.",
+    "keyPoints": [
+      "Class component getDerivedStateFromError",
+      "Class component componentDidCatch",
+      "Functional component with throw() in JSX (future)",
+      "Boundary placement and error bubbling"
+    ]
+  },
+  {
+    "id": "dom-manipulation",
+    "title": "Explain DOM Mutation and Re-render",
+    "difficulty": "Intermediate",
+    "tags": ["javascript", "dom"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Explain how DOM changes trigger React re-renders and the diffing algorithm.",
+    "keyPoints": [
+      "Virtual DOM diffing and reconciliation",
+      "setState triggers a re-render",
+      "Keys help identify changed items",
+      "Mutating DOM vs React's declarative approach"
+    ]
+  },
+  {
+    "id": "useeffect-execution",
+    "title": "Explain useEffect Execution Order",
+    "difficulty": "Intermediate",
+    "tags": ["react", "hooks"],
+    "researchTime": 6,
+    "presentationTime": 2,
+    "hint": "Explain the order of effects, cleanup, and when effects fire in the component lifecycle.",
+    "keyPoints": [
+      "useEffect runs after paint",
+      "useLayoutEffect runs synchronously after DOM mutations",
+      "Cleanup function returns and order guarantees",
+      "Multiple useEffect hooks ordering"
+    ]
+  },
+  {
+    "id": "typescript-types",
+    "title": "Explain TypeScript Type System",
+    "difficulty": "Hard",
+    "tags": ["typescript", "types"],
+    "researchTime": 12,
+    "presentationTime": 4,
+    "hint": "Explain structural typing, type guards, utility types, and advanced type patterns.",
+    "keyPoints": [
+      "Structural vs name typing",
+      "Type guards (in, instanceof, isX)",
+      "Utility types (Partial, Pick, Omit)",
+      "Conditional types and mapped types"
+    ]
+  },
+  {
+    "id": "css-flexbox-fundamentals",
+    "title": "Explain CSS Flexbox Fundamentals",
+    "difficulty": "Beginner",
+    "tags": ["css", "layout"],
+    "researchTime": 5,
+    "presentationTime": 2,
+    "hint": "Explain the CSS Flexbox specification, main axis, cross axis, and flex properties.",
+    "keyPoints": [
+      "display: flex and the main axis",
+      "flex-direction, flex-wrap, flex-flow",
+      "justify-content and align-items",
+      "flex-grow, flex-shrink, flex-basis"
+    ]
+  },
+  {
+    "id": "react-portal",
+    "title": "Explain React Portals",
+    "difficulty": "Intermediate",
+    "tags": ["react", "rendering"],
+    "researchTime": 6,
+    "presentationTime": 2,
+    "hint": "Explain how Portals let you render children outside the DOM hierarchy of parent component.",
+    "keyPoints": [
+      "ReactDOM.createPortal(child, domNode)",
+      "Why portals bypass the parent DOM tree",
+      "Use cases: modals, popovers, tooltip containers",
+      "Events bubble from portals normally"
+    ]
+  },
+  {
+    "id": "javascript-event-delegation",
+    "title": "Explain Event Delegation in JavaScript",
+    "difficulty": "Intermediate",
+    "tags": ["javascript", "events"],
+    "researchTime": 6,
+    "presentationTime": 2,
+    "hint": "Explain how event delegation leverages bubbling to handle events at a higher level.",
+    "keyPoints": [
+      "Single event listener on parent vs many on children",
+      "Event bubbling and target vs currentTarget",
+      "Delegating to closest static ancestor",
+      "When not to use event delegation"
+    ]
+  },
+  {
+    "id": "web-performance-metrics",
+    "title": "Explain Web Performance Metrics",
+    "difficulty": "Intermediate",
+    "tags": ["performance", "web-vitals"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Explain LCP, FID, CLS, INP and how to measure and improve them.",
+    "keyPoints": [
+      "Largest Contentful Paint (LCP)",
+      "First Input Delay (FID) / Interaction to Next Paint (INP)",
+      "Cumulative Layout Shift (CLS)",
+      "Core Web Vitals and optimization strategies"
+    ]
+  },
+  {
+    "id": "react-custom-hooks",
+    "title": "Create a Custom React Hook",
+    "difficulty": "Intermediate",
+    "tags": ["react", "hooks"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Explain how to extract component logic into a reusable hook.",
+    "keyPoints": [
+      "Hook naming convention (useX)",
+      "Hooks must follow rules of hooks",
+      "extracting stateful logic",
+      "Testing custom hooks"
+    ]
+  },
+  {
+    "id": "server-side-rendering",
+    "title": "Explain Server-Side Rendering",
+    "difficulty": "Hard",
+    "tags": ["react", "rendering"],
+    "researchTime": 12,
+    "presentationTime": 4,
+    "hint": "Explain how SSR works with Next.js, hydration, and the differences from CSR.",
+    "keyPoints": [
+      "SSR renders HTML on the server on each request",
+      "Hydration matches client JS to server HTML",
+      "SEO benefits of SSR",
+      "Partial vs Full SSR strategies"
+    ]
   }
 ]

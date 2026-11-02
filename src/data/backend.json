@@ -118,5 +118,230 @@
       "Storing responses for replay",
       "Race conditions in concurrent retries"
     ]
+  },
+  {
+    "id": "api-rate-limiting",
+    "title": "Design an API Rate Limiter",
+    "difficulty": "Hard",
+    "tags": ["api", "reliability", "scalability"],
+    "researchTime": 12,
+    "presentationTime": 4,
+    "hint": "Compare token bucket, leaky bucket, and sliding window algorithms for request throttling.",
+    "keyPoints": [
+      "Token bucket vs leaky bucket algorithms",
+      "Sliding window counter implementation",
+      "Distributed rate limiting with Redis",
+      "HTTP response headers (Retry-After)"
+    ]
+  },
+  {
+    "id": "message-queues",
+    "title": "Explain Message Queues and Pub/Sub",
+    "difficulty": "Intermediate",
+    "tags": ["messaging", "async"],
+    "researchTime": 10,
+    "presentationTime": 3,
+    "hint": "Explain how queues decouple producers and consumers, and compare queue vs pub-sub patterns.",
+    "keyPoints": [
+      "FIFO vs topic-based pub-sub",
+      "Message acknowledgment and dead-letter queues",
+      "Idempotent consumers",
+      "RabbitMQ vs Kafka vs SQS"
+    ]
+  },
+  {
+    "id": "schema-design",
+    "title": "Design a Database Schema",
+    "difficulty": "Hard",
+    "tags": ["databases", "design"],
+    "researchTime": 15,
+    "presentationTime": 4,
+    "hint": "Explain normalization, denormalization, and trade-offs for read-heavy vs write-heavy workloads.",
+    "keyPoints": [
+      "1NF, 2NF, 3NF normal forms",
+      "Denormalization for read performance",
+      "Covering indexes vs clustered indexes",
+      "Schema migration strategies"
+    ]
+  },
+  {
+    "id": "cors-headers",
+    "title": "Explain CORS Headers Configuration",
+    "difficulty": "Beginner",
+    "tags": ["security", "http"],
+    "researchTime": 5,
+    "presentationTime": 2,
+    "hint": "Explain Access-Control-Allow-Origin, methods, and headers for cross-origin resource sharing.",
+    "keyPoints": [
+      "Access-Control-Allow-Origin wildcard vs specific origin",
+      "Access-Control-Allow-Methods and Allow-Headers",
+      "Credentials with withCredentials",
+      "Preflight OPTIONS requests"
+    ]
+  },
+  {
+    "id": "grpc-basics",
+    "title": "Explain gRPC Basics",
+    "difficulty": "Intermediate",
+    "tags": ["api", "protocols"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Explain Protocol Buffers, stubs, and how gRPC differs from REST/JSON.",
+    "keyPoints": [
+      "Protocol Buffers IDL and message format",
+      "Generated client/server stubs",
+      "Unary, server-streaming, client-streaming, bidirectional",
+      "gRPC vs REST comparison"
+    ]
+  },
+  {
+    "id": "caching-redis",
+    "title": "Explain Redis Caching Strategies",
+    "difficulty": "Intermediate",
+    "tags": ["caching", "performance"],
+    "researchTime": 10,
+    "presentationTime": 3,
+    "hint": "Explain cache-aside, read-through, write-through patterns with Redis.",
+    "keyPoints": [
+      "Cache-aside (read-through) pattern",
+      "Write-through and write-behind",
+      "TTL and eviction policies",
+      "Cache stampede prevention"
+    ]
+  },
+  {
+    "id": "api-versioning",
+    "title": "Explain API Versioning Strategies",
+    "difficulty": "Intermediate",
+    "tags": ["api", "management"],
+    "researchTime": 6,
+    "presentationTime": 2,
+    "hint": "Explain URL versioning, header versioning, and content-negotiation approaches.",
+    "keyPoints": [
+      "URL versioning (/v1/resource)",
+      "Header versioning (Accept: version=1)",
+      "Content negotiation via media types",
+      "Deprecation and sunset policies"
+    ]
+  },
+  {
+    "id": "stateless-vs-stateful",
+    "title": "Explain Stateless vs Stateful Services",
+    "difficulty": "Hard",
+    "tags": ["architecture", "scalability"],
+    "researchTime": 12,
+    "presentationTime": 4,
+    "hint": "Explain when to maintain state, when to externalize it, and the trade-offs for scaling.",
+    "keyPoints": [
+      "Stateless: no server-side session storage",
+      "Stateful: server-side sessions, local cache",
+      "Externalizing state: Redis, DB, distributed cache",
+      "Trade-offs for horizontal scaling"
+    ]
+  },
+  {
+    "id": "database-indexing",
+    "title": "Explain Database Indexing",
+    "difficulty": "Intermediate",
+    "tags": ["databases", "performance"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Explain B-tree indexes, covering indexes, and index selectivity.",
+    "keyPoints": [
+      "B-tree structure and leaf nodes",
+      "Covering indexes include all query columns",
+      "Index selectivity and cardinality",
+      "Too many indexes hurt write performance"
+    ]
+  },
+  {
+    "id": "jwt-auth",
+    "title": "Explain JWT Authentication Flow",
+    "difficulty": "Intermediate",
+    "tags": ["security", "auth"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Explain how JSON Web Tokens work for authentication and stateless authorization.",
+    "keyPoints": [
+      "Header, payload, and signature sections",
+      "HS256 vs RS256 algorithms",
+      "Token expiration and refresh flows",
+      "JWT vs session-based auth comparison"
+    ]
+  },
+  {
+    "id": "microservices-comm",
+    "title": "Explain Microservices Communication",
+    "difficulty": "Hard",
+    "tags": ["architecture", "distributed"],
+    "researchTime": 15,
+    "presentationTime": 4,
+    "hint": "Explain synchronous (HTTP/gRPC) vs asynchronous (messaging) communication patterns.",
+    "keyPoints": [
+      "Remote procedure calls (REST, gRPC)",
+      "Event-driven communication (Kafka, RabbitMQ)",
+      "Circuit breakers and retries",
+      "Service discovery patterns"
+    ]
+  },
+  {
+    "id": "logging-structure",
+    "title": "Explain Structured Logging",
+    "difficulty": "Intermediate",
+    "tags": ["monitoring", "ops"],
+    "researchTime": 6,
+    "presentationTime": 2,
+    "hint": "Explain structured logging (JSON logs), correlation IDs, and log aggregation.",
+    "keyPoints": [
+      "JSON log format and key-value pairs",
+      "Correlation IDs across service boundaries",
+      "Log levels and severity",
+      "Elasticsearch / Loki / Datadog aggregation"
+    ]
+  },
+  {
+    "id": "canary-deployments",
+    "title": "Explain Canary Deployments",
+    "difficulty": "Hard",
+    "tags": ["deployment", "reliability"],
+    "researchTime": 10,
+    "presentationTime": 3,
+    "hint": "Explain how canary releases reduce risk by gradually shifting traffic.",
+    "keyPoints": [
+      "Canary vs blue-green deployment",
+      "Gradual traffic shifting percentages",
+      "Monitoring and rollback criteria",
+      "Feature flag integration"
+    ]
+  },
+  {
+    "id": "docker-compose",
+    "title": "Explain Docker Compose and Multi-Container Apps",
+    "difficulty": "Beginner",
+    "tags": ["docker", "orchestration"],
+    "researchTime": 5,
+    "presentationTime": 2,
+    "hint": "Explain how docker-compose.yml orchestrates multi-container applications.",
+    "keyPoints": [
+      "services, networks, and volumes sections",
+      "depends_on ordering",
+      "environment variables and file passthrough",
+      "Running with docker compose up"
+    ]
+  },
+  {
+    "id": "api-testing-strategies",
+    "title": "Explain API Testing Strategies",
+    "difficulty": "Intermediate",
+    "tags": ["testing", "api"],
+    "researchTime": 8,
+    "presentationTime": 3,
+    "hint": "Explain unit, integration, and contract testing for REST and gRPC APIs.",
+    "keyPoints": [
+      "Pact for consumer-driven contract testing",
+      "Postman and Newman for integration tests",
+      "Schema validation with OpenAPI",
+      "Mock servers and contract testing"
+    ]
   }
 ]

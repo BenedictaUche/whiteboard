@@ -10,6 +10,8 @@ export interface Topic {
     category: Track;
     /** Structured sub-area from the track taxonomy (AI topics only). */
     topicCategory?: string;
+    /** Question style from the shared taxonomy (AI topics only). */
+    questionStyle?: string;
     hint?: string;
     keyPoints?: string[];
     expectedConcepts?: string[];

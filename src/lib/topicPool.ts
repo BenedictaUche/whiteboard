@@ -11,13 +11,13 @@ function titleKey(title: string): string {
     return title.trim().toLowerCase();
 }
 
-const SEEN_TITLES_LIMIT = 30;
+const SEEN_TITLES_LIMIT = 300;
 function seenTitlesKey(track: Track): string {
     return `Whiteboard_seen_${track}`;
 }
 function loadSeenTitles(track: Track): string[] {
     try {
-        const raw = safeStorageGet(seenTitlesKey(track));
+        const raw = localStorage.getItem(seenTitlesKey(track));
         if (!raw)
             return [];
         const parsed = JSON.parse(raw);
@@ -31,7 +31,7 @@ function loadSeenTitles(track: Track): string[] {
 }
 function saveSeenTitles(track: Track, titles: string[]): void {
     // insertion order = oldest first
-    safeStorageSet(seenTitlesKey(track), JSON.stringify(titles.slice(-SEEN_TITLES_LIMIT)));
+    localStorage.setItem(seenTitlesKey(track), JSON.stringify(titles.slice(-SEEN_TITLES_LIMIT)));
 }
 
 export function recordConsumedTitles(track: Track, currentBank: Topic[]): void {
@@ -112,6 +112,22 @@ function safeStorageSet(key: string, value: string): void {
     catch {
     }
 }
+function localStorageGet(key: string): string | null {
+    try {
+        return localStorage.getItem(key);
+    }
+    catch {
+        return null;
+    }
+}
+function localStorageSet(key: string, value: string): void {
+    try {
+        localStorage.setItem(key, value);
+    }
+    catch {
+    }
+}
+
 function difficultyFromGenerated(d: GeneratedTopic['difficulty']): Topic['diff'] {
     return d;
 }
@@ -144,6 +160,7 @@ function aiTopicToTopic(t: GeneratedTopic, track: Track, idx: number): Topic {
         pres: `${presentationTimeFor(t.difficulty)} min presentation`,
         category: track,
         topicCategory: t.category,
+        questionStyle: (t as { questionStyle?: string }).questionStyle,
         hint: 'AI-generated interview topic — explore any angle that helps you explain it well.',
         expectedConcepts: Array.isArray(t.expectedConcepts) ? t.expectedConcepts : undefined,
         researchTime: researchTimeFor(t.difficulty),
@@ -265,6 +282,11 @@ export function invalidateTopicPool(track: Track) {
     sessionCache.delete(track);
     try {
         sessionStorage.removeItem(cacheKey(track));
+    }
+    catch {
+    }
+    try {
+        localStorage.removeItem(seenTitlesKey(track));
     }
     catch {
     }
